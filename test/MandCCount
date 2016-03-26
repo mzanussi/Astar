@@ -1,0 +1,17 @@
+	SolnPathLen MoveSeq NodesOpened NodesClosed NumReopened
+	Puzzle
+	MissionariesAndCannibals (MandCCount) =
+	{
+	InitialState =  { WEST BANK : 3 Cannibals and 3 Missionaries
+	                  EAST BANK : 0 Cannibals and 0 Missionaries
+	                  BOAT is on WEST BANK
+	                }
+	GoalState =     { WEST BANK : 0 Cannibals and 0 Missionaries
+	                  EAST BANK : 3 Cannibals and 3 Missionaries
+	                  BOAT is on EAST BANK
+	                }
+	BoatCapacity = 2
+	}
+	Run
+	OpenListMaxLen
+	OpenClosedRatio

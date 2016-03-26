@@ -1,0 +1,17 @@
+	SolnPathLen StatePath MoveSeq NodesOpened NodesClosed NumReopened
+	Puzzle
+	ShortestPaths (ShortestPathsNonMono) =
+	{
+	Cities = (Albuquerque,Tijeras,SantaFe,Bernalillo,Moriarity)
+	Distances = ( Albuquerque -> Tijeras  = 30,
+	              Albuquerque -> Bernalillo = 20,
+	              Bernalillo -> SantaFe = 40,
+	              Bernalillo -> Tijeras = 50,
+	              Tijeras -> Moriarity = 15,
+	              Moriarity -> SantaFe = 50 )
+	StartCity = Albuquerque
+	GoalCity = SantaFe
+	 }   
+	Run
+	OpenListMaxLen
+	OpenClosedRatio

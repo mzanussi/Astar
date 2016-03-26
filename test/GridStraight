@@ -1,0 +1,19 @@
+	SolnPathLen MoveSeq NodesOpened NodesClosed NumReopened
+	Puzzle
+	Grid (GridStraight) =
+	{
+	GridSize = 5
+	StartCoordinates = 0 , 0
+	GoalCoordinates = 4 , 4
+	Obstacles = ( 1:1 = 50,
+	              1:2 = 50,
+	              1:3 = 100,
+	              1:4 = 50,
+	              2:2 = 50,
+	              3:2 = 500,
+	              3:3 = 50,
+	              4:1 = 50 )
+	}
+	Run
+	OpenListMaxLen
+	OpenClosedRatio
