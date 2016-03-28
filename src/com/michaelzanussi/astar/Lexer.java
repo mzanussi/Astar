@@ -31,6 +31,6 @@ public interface Lexer {
 	 * 
 	 * @param t the token to push back.
 	 */
-	public void pushBack( Token t );
+	public void pushBack(Token t);
 	
 }

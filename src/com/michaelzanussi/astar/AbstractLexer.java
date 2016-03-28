@@ -16,38 +16,38 @@ public abstract class AbstractLexer implements Lexer {
 	/**
 	 * 	Are there any more tokens available?
 	 */
-	protected boolean _avail;
+	protected boolean avail;
 	
 	/**
 	 * 	The input stream.
 	 */
-	protected Reader _in;
+	protected Reader in;
 	
 	/**
 	 * The pushback buffer.
 	 */
-	protected Stack _pushBackBuffer;
+	protected Stack<Token> pushBackBuffer;
 
 	/**
 	 * The current state of the token.
 	 */
-	protected int _state;
+	protected int state;
 	
 	/**
 	 * The current token being constructed.
 	 */
-	protected StringBuffer _token;
+	protected StringBuffer token;
 	
 	/**
 	 * No-arg constructor.
 	 */
 	public AbstractLexer() {
 		
-		_avail = true;
-		_in = null;
-		_pushBackBuffer = new Stack();
-		_state = -1;
-		_token = new StringBuffer();
+		avail = true;
+		in = null;
+		pushBackBuffer = new Stack<Token>();
+		state = -1;
+		token = new StringBuffer();
 		
 	}
 	
@@ -59,7 +59,7 @@ public abstract class AbstractLexer implements Lexer {
 	 */
 	public boolean hasMoreTokens() {
 		
-		return _avail;
+		return avail;
 		
 	}
 	
@@ -67,7 +67,7 @@ public abstract class AbstractLexer implements Lexer {
 	 * Returns the next token in the token stream.
 	 * 
 	 * Defer to the subclass for implementation as this is subclass
-	 * dependant.
+	 * dependent.
 	 * 
 	 * @return the next token in the token stream.
 	 */
@@ -79,15 +79,14 @@ public abstract class AbstractLexer implements Lexer {
 	 * @param t the token to push back.
 	 * @throws NullPointerException If a <code>null</code> token is specified.
 	 */
-	public void pushBack( Token t ) throws NullPointerException {
+	public void pushBack(Token t) throws NullPointerException {
 		
 		// Verify token isn't null.
-		if( t == null ) {
-			throw new NullPointerException( "AbstractLexer.pushBack error: " +
-					"Token cannot be null." );
+		if (t == null) {
+			throw new NullPointerException("AbstractLexer.pushBack error: Token cannot be null.");
 		}
 		
-		_pushBackBuffer.push( t );
+		pushBackBuffer.push(t);
 		
 	}
 	

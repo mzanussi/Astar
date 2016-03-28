@@ -37,10 +37,10 @@ public final class PuzzleLexer extends AbstractLexer {
 	private static final int STATE_PAIR = 5;		// parsing symbol pair (e.g. "->")
 	
 	// Valid punctuation used within the input file.
-	private static final String _punctuation = "=/\\.-_:(){}[]\",>";
+	private static final String punctuation = "=/\\.-_:(){}[]\",>";
 
 	// The current token classification.
-	private int _type = PuzzleToken.TT_UNK;
+	private int type = PuzzleToken.TT_UNK;
 	
 	/**
 	 * Standard constructor.
@@ -48,19 +48,18 @@ public final class PuzzleLexer extends AbstractLexer {
 	 * @param in the input stream.
 	 * @throws NullPointerException If not reader is specified.
 	 */
-	public PuzzleLexer( Reader in ) throws NullPointerException {
+	public PuzzleLexer(Reader in) throws NullPointerException {
 
 		// Call the superclass's constructor.
 		super();
 		
 		// Did the user specify a valid reader?
-		if( in == null ) {
-			throw new NullPointerException( "PuzzleLexer.PuzzleLexer error: " +
-					"PuzzleLexer requires a Reader." );
+		if (in == null) {
+			throw new NullPointerException("PuzzleLexer.PuzzleLexer error: PuzzleLexer requires a Reader.");
 		}
 		
-		_in = in;
-		_state = STATE_NONE;
+		this.in = in;
+		state = STATE_NONE;
 		
 	}
 
@@ -88,13 +87,13 @@ public final class PuzzleLexer extends AbstractLexer {
 		
 		// If there's a token already on the pushback buffer, 
 		// pop and return that token first.
-		if( !_pushBackBuffer.isEmpty() ) {
-			return (Token)_pushBackBuffer.pop();
+		if (!pushBackBuffer.isEmpty()) {
+			return pushBackBuffer.pop();
 		}
 		
 		// We'll never miss an exit point from this "endless" loop, 
 		// so it's okay to block here.
-		while( true ) {
+		while (true) {
 			
 			// Read in the next character and test for EOF. If not EOF,
 			// convert the integer to a character. If EOF, set availability 
@@ -102,45 +101,44 @@ public final class PuzzleLexer extends AbstractLexer {
 			
 			char ch = 0;
 			try {
-				int i = _in.read();
-				if( i < 0 ) {
-					_avail = false;
-					return new PuzzleToken( _token.toString(), _type );
+				int i = in.read();
+				if (i < 0) {
+					avail = false;
+					return new PuzzleToken(token.toString(), type);
 				}
 				ch = (char)i;
-			} catch( IOException e ) {
-				Global.error( "Error reading from data stream: " + e.getMessage() );
+			} catch (IOException e) {
+				Global.error("Error reading from data stream: " + e.getMessage());
 			}
 			
-
 			// Input character is a period or an underscore. These symbols are 
 			// valid when they appear within a filename (DIR-OR-FILENAME). They 
 			// never appear as stand-alone symbols.
 			
-			if( ch == '.' || ch == '_') {
+			if (ch == '.' || ch == '_') {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_INT:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_DIGIT );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_DIGIT);
 					case STATE_WORD:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_SYMBOL:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_FILE, PuzzleToken.TT_SYMBOL );
+						return actionSaveReturn(ch, STATE_FILE, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_PAIR:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_PAIR);
 				}
 			}
 			
@@ -149,31 +147,31 @@ public final class PuzzleLexer extends AbstractLexer {
 			// (DIR-OR-FILENAME). It never appears as a stand-alone
 			// symbol.
 			
-			else if( ch == '/' ) {
+			else if (ch == '/') {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_INT:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_WORD:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_SYMBOL:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_FILE, PuzzleToken.TT_SYMBOL );
+						return actionSaveReturn(ch, STATE_FILE, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_PAIR:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 				}
 			}
@@ -182,30 +180,30 @@ public final class PuzzleLexer extends AbstractLexer {
 			// appears within a filename (DIR-OR-FILENAME) or as the
 			// start of the "->" symbol (DISTPAIR).
 			
-			else if( ch == '-' ) {
+			else if (ch == '-') {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Append
-						_actionAppend( ch, STATE_PAIR, PuzzleToken.TT_PAIR );
+						actionAppend(ch, STATE_PAIR, PuzzleToken.TT_PAIR);
 						break;
 					case STATE_INT:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_PAIR, PuzzleToken.TT_PAIR );
+						return actionSaveReturn(ch, STATE_PAIR, PuzzleToken.TT_PAIR);
 					case STATE_WORD:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_SYMBOL:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_PAIR, PuzzleToken.TT_SYMBOL );
+						return actionSaveReturn(ch, STATE_PAIR, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_PAIR:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_PAIR);
 				}
 			}
 
@@ -214,27 +212,27 @@ public final class PuzzleLexer extends AbstractLexer {
 			// (DISTPAIR). If never appears as a first character or a
 			// stand-alone symbol.
 			
-			else if( ch == '>' ) {
+			else if (ch == '>') {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Ignore
 						break;
 					case STATE_INT:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_DIGIT );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_DIGIT);
 					case STATE_WORD:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_ALPHA );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_ALPHA);
 					case STATE_SYMBOL:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_SYMBOL );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_FILE );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_FILE);
 					case STATE_PAIR:
 						// Append, Return
-						return _actionAppendReturn( ch, STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionAppendReturn(ch, STATE_NONE, PuzzleToken.TT_PAIR);
 				}
 			}
 			
@@ -242,86 +240,86 @@ public final class PuzzleLexer extends AbstractLexer {
 			// punctuation list (see _punctuation). This list comprises 
 			// the possible symbol list.
 			
-			else if( _punctuation.indexOf( ch ) >= 0 ) {
+			else if (punctuation.indexOf(ch) >= 0) {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Append
-						_actionAppend( ch, STATE_SYMBOL, PuzzleToken.TT_SYMBOL );
+						actionAppend(ch, STATE_SYMBOL, PuzzleToken.TT_SYMBOL);
 						break;
 					case STATE_INT:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_SYMBOL, PuzzleToken.TT_DIGIT );
+						return actionSaveReturn(ch, STATE_SYMBOL, PuzzleToken.TT_DIGIT);
 					case STATE_WORD:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_SYMBOL, PuzzleToken.TT_ALPHA );
+						return actionSaveReturn(ch, STATE_SYMBOL, PuzzleToken.TT_ALPHA);
 					case STATE_SYMBOL:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_SYMBOL, PuzzleToken.TT_SYMBOL );
+						return actionSaveReturn(ch, STATE_SYMBOL, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_SYMBOL, PuzzleToken.TT_FILE );
+						return actionSaveReturn(ch, STATE_SYMBOL, PuzzleToken.TT_FILE);
 					case STATE_PAIR:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_PAIR);
 				}
 			}
 			
 			// Input character is an alphabetic character (A-Z, a-z).
 			
-			else if( Character.isLetter( ch ) ) {
+			else if (Character.isLetter(ch)) {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Append
-						_actionAppend( ch, STATE_WORD, PuzzleToken.TT_ALPHA );
+						actionAppend(ch, STATE_WORD, PuzzleToken.TT_ALPHA);
 						break;
 					case STATE_INT:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_WORD, PuzzleToken.TT_DIGIT );
+						return actionSaveReturn(ch, STATE_WORD, PuzzleToken.TT_DIGIT);
 					case STATE_WORD:
 						// Append
-						_actionAppend( ch, STATE_WORD, PuzzleToken.TT_ALPHA );
+						actionAppend(ch, STATE_WORD, PuzzleToken.TT_ALPHA);
 						break;
 					case STATE_SYMBOL:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_WORD, PuzzleToken.TT_SYMBOL );
+						return actionSaveReturn(ch, STATE_WORD, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_PAIR:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_PAIR);
 				}
 			}
 			
 			// Input character is a digit (0-9).
 			
-			else if( Character.isDigit( ch ) ) {
+			else if (Character.isDigit(ch)) {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Append
-						_actionAppend( ch, STATE_INT, PuzzleToken.TT_DIGIT );
+						actionAppend(ch, STATE_INT, PuzzleToken.TT_DIGIT);
 						break;
 					case STATE_INT:
 						// Append
-						_actionAppend( ch, STATE_INT, PuzzleToken.TT_DIGIT );
+						actionAppend(ch, STATE_INT, PuzzleToken.TT_DIGIT);
 						break;
 					case STATE_WORD:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_INT, PuzzleToken.TT_ALPHA );
+						return actionSaveReturn(ch, STATE_INT, PuzzleToken.TT_ALPHA);
 					case STATE_SYMBOL:
 						// Save, Return
-						return _actionSaveReturn( ch, STATE_INT, PuzzleToken.TT_SYMBOL );
+						return actionSaveReturn(ch, STATE_INT, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Append
-						_actionAppend( ch, STATE_FILE, PuzzleToken.TT_FILE );
+						actionAppend(ch, STATE_FILE, PuzzleToken.TT_FILE);
 						break;
 					case STATE_PAIR:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_PAIR);
 				}
 			}
 			
@@ -330,25 +328,25 @@ public final class PuzzleLexer extends AbstractLexer {
 			
 			else {
 				// Switch on the current state...
-				switch( _state ) {
+				switch (state) {
 					case STATE_NONE:
 						// Ignore
 						break;
 					case STATE_INT:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_DIGIT );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_DIGIT);
 					case STATE_WORD:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_ALPHA );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_ALPHA);
 					case STATE_SYMBOL:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_SYMBOL );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_SYMBOL);
 					case STATE_FILE:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_FILE );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_FILE);
 					case STATE_PAIR:
 						// Ignore, Return
-						return _actionIgnoreReturn( STATE_NONE, PuzzleToken.TT_PAIR );
+						return actionIgnoreReturn(STATE_NONE, PuzzleToken.TT_PAIR);
 				}			
 			}
 		
@@ -366,20 +364,19 @@ public final class PuzzleLexer extends AbstractLexer {
 	 * @return the current token.
 	 * @throws IllegalArgumentException If state < 0.
 	 */
-	private void _actionAppend( char ch, int state, int type ) throws IllegalArgumentException {
+	private void actionAppend(char ch, int state, int type) throws IllegalArgumentException {
 		
 		// Is this a valid state?
-		if( state < 0 ) {
-			throw new IllegalArgumentException( "PuzzleLexer._actionAppend error: " +
-					"Invalid state specified for the Append action: " + state );
+		if (state < 0) {
+			throw new IllegalArgumentException("PuzzleLexer._actionAppend error: Invalid state specified for the Append action: " + state);
 		}
 		
 		// Append current character to token.
-		_token.append( ch );
+		token.append(ch);
 		// Set the next state.
-		_state = state;
+		this.state = state;
 		// Set the current token type being processed.
-		_type = type;
+		this.type = type;
 		
 	}
 	
@@ -393,18 +390,17 @@ public final class PuzzleLexer extends AbstractLexer {
 	 * @return the current token.
 	 * @throws IllegalArgumentException If state < 0.
 	 */
-	private Token _actionAppendReturn( char ch, int state, int type ) throws IllegalArgumentException {
+	private Token actionAppendReturn(char ch, int state, int type) throws IllegalArgumentException {
 		
 		// Is this a valid state?
-		if( state < 0 ) {
-			throw new IllegalArgumentException( "PuzzleLexer._actionAppendReturn error: " +
-					"Invalid state specified for the AppendReturn action: " + state );
+		if (state < 0) {
+			throw new IllegalArgumentException("PuzzleLexer._actionAppendReturn error: Invalid state specified for the AppendReturn action: " + state);
 		}
 		
 		// Append current character to token.
-		_token.append( ch );
+		token.append(ch);
 		
-		return _actionIgnoreReturn( state, type );
+		return actionIgnoreReturn(state, type);
 		
 	}
 	
@@ -417,22 +413,21 @@ public final class PuzzleLexer extends AbstractLexer {
 	 * @return the current token.
 	 * @throws IllegalArgumentException If state < 0.
 	 */
-	private Token _actionIgnoreReturn( int state, int type ) throws IllegalArgumentException {
+	private Token actionIgnoreReturn(int state, int type) throws IllegalArgumentException {
 
 		// Is this a valid state?
-		if( state < 0 ) {
-			throw new IllegalArgumentException( "PuzzleLexer._actionIgnoreReturn error: " +
-					"Invalid state specified for the IgnoreReturn action: " + state );
+		if (state < 0) {
+			throw new IllegalArgumentException("PuzzleLexer._actionIgnoreReturn error: Invalid state specified for the IgnoreReturn action: " + state);
 		}
 		
 		// Save the token.
-		Token token = new PuzzleToken( _token.toString(), type );
+		Token ntoken = new PuzzleToken(token.toString(), type);
 		// Empty the contents of the current token.
-		_token.delete( 0, _token.length() );
+		token.delete(0, token.length());
 		// Set the next state.
-		_state = state;
+		this.state = state;
 		
-		return token;
+		return ntoken;
 		
 	}
 
@@ -446,24 +441,23 @@ public final class PuzzleLexer extends AbstractLexer {
 	 * @return the current token.
 	 * @throws IllegalArgumentException If state < 0.
 	 */
-	private Token _actionSaveReturn( char ch, int state, int type ) throws IllegalArgumentException {
+	private Token actionSaveReturn(char ch, int state, int type) throws IllegalArgumentException {
 
 		// Is this a valid state?
-		if( state < 0 ) {
-			throw new IllegalArgumentException( "PuzzleLexer._actionSaveReturn error: " +
-					"Invalid state specified for the SaveReturn action: " + state );
+		if (state < 0) {
+			throw new IllegalArgumentException("PuzzleLexer._actionSaveReturn error: Invalid state specified for the SaveReturn action: " + state);
 		}
 		
 		// Save the token.
-		Token token = new PuzzleToken( _token.toString(), type );
+		Token ntoken = new PuzzleToken(token.toString(), type);
 		// Empty the contents of the current token.
-		_token.delete( 0, _token.length() );
+		token.delete(0, token.length());
 		// Append the current character to token.
-		_token.append( ch );
+		token.append(ch);
 		// Set the next state.
-		_state = state;
+		this.state = state;
 		
-		return token;
+		return ntoken;
 		
 	}
 	
