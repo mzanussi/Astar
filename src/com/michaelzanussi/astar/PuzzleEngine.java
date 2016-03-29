@@ -1,6 +1,6 @@
 package com.michaelzanussi.astar;
 
-import java.util.*;
+import java.util.LinkedList;
 
 /**
  * An interface for a puzzle engine containing a single method,
@@ -21,6 +21,6 @@ public interface PuzzleEngine {
 	 * @return the path to the goal puzzle state if a path is found, or 
 	 * <code>null</code> if no path exists.
 	 */
-	public LinkedList path();
+	public LinkedList<Object> path();
 
 }

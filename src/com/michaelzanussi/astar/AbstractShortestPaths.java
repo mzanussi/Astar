@@ -14,27 +14,27 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	/**
 	 * The current city name.
 	 */
-	protected String _city;
+	protected String city;
 	
 	/**
 	 * The distance from this city to its parent city.
 	 */
-	protected double _distance;
+	protected double distance;
 
 	/**
-	 * Standard constuctor.
+	 * Standard constructor.
 	 * 
 	 * @param city the name of the city.
 	 * @param distance the cost to travel to this city 
 	 * from the "parent" city.
-	 * @param parent the city we travelled from.
+	 * @param parent the city we traveled from.
 	 */
-	public AbstractShortestPaths( String city, double distance, PuzState parent ) {
+	public AbstractShortestPaths(String city, double distance, PuzState parent) {
 		
 		super();
-		_city = city;
-		_distance = distance;
-		_parent = parent;
+		this.city = city;
+		this.distance = distance;
+		super.parent = parent;
 		
 	}
 
@@ -47,7 +47,7 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 */
 	public double distFromStart() {
 		
-		return ( _parent == null ? 0.0 : _parent.distFromStart() + _distance );
+		return (parent == null ? 0.0 : parent.distFromStart() + distance);
 		
 	}
 	
@@ -62,7 +62,7 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 * @return <code>true</code> if this object is the same as the obj
 	 * argument; <code>false</code> otherwise.
 	 */
-	public abstract boolean equals( Object o );
+	public abstract boolean equals(Object o);
 
 	/**
 	 * Returns the current city name.
@@ -71,7 +71,7 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 */
 	public String getLabel() { 
 		
-		return _city; 
+		return city; 
 		
 	}
 	
@@ -82,7 +82,7 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 */
 	public double getDistance() { 
 		
-		return _distance; 
+		return distance; 
 		
 	}
 	
@@ -94,7 +94,7 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 */
 	public int hashCode() {
 		
-		return _city.hashCode();
+		return city.hashCode();
 		
 	}
 	
@@ -122,14 +122,13 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 * (<code>g(s)</code>) for this node.
 	 * @throws IllegalArgumentException If <code>d</code> is less than 0.0.
 	 */
-	public void setDistFromStart( double d ) throws IllegalArgumentException {
+	public void setDistFromStart(double d) throws IllegalArgumentException {
 
-		if( d < 0.0 ) {
-			throw new IllegalArgumentException( "AbstractShortestPaths.setDistFromStart " +
-					"error: Cost/distance must be >= 0.0. Received: " + d );
+		if (d < 0.0) {
+			throw new IllegalArgumentException("AbstractShortestPaths.setDistFromStart error: Cost/distance must be >= 0.0. Received: " + d);
 		}
 		
-		_g = d;
+		g = d;
 		
 	}
 	
@@ -140,7 +139,7 @@ public abstract class AbstractShortestPaths extends AbstractPuzState implements 
 	 */
 	public String toString() {
 		
-		return ( "CurrentCity = " + _city );
+		return ("CurrentCity = " + city);
 		
 	}
 	

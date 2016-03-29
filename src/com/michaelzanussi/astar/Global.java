@@ -38,6 +38,9 @@ public class Global {
 	private static TextFileWriter _logFile = null;
 	private static TextFileWriter _errFile = null;
 	
+	// Unit test support.
+	private static String data;
+	
 	/**
 	 * No-arg constructor.
 	 */
@@ -239,6 +242,17 @@ public class Global {
 	}
 	
 	/**
+	 * Return data for unit testing.
+	 * 
+	 * @return data for unit testing.
+	 */
+	public static String getData() {
+		
+		return data;
+		
+	}
+	
+	/**
 	 * Outputs a line of text to the standard output or a log file.
 	 * If the file handle is <code>null</code>, output goes to the standard 
 	 * output; otherwise, output is directed to the necessary file.
@@ -246,6 +260,8 @@ public class Global {
 	 * @param message the message to log.
 	 */
 	public static void log( String message ) {
+		
+		data += message;	// unit testing
 		
 		if( getLogFile() == null ) {
 			System.out.println( message );
@@ -264,6 +280,8 @@ public class Global {
 	 * @param message the message to output.
 	 */
 	public static void output( String message ) {
+		
+		data += message;	// unit testing
 		
 		if( getOutFile() == null ) {
 			System.out.println( message );
@@ -305,6 +323,7 @@ public class Global {
 		_statePath = false;
 		_timeBound = Long.MAX_VALUE;
 		_totalNodesBound = Integer.MAX_VALUE;
+		data = "";
 		
 	}
 	

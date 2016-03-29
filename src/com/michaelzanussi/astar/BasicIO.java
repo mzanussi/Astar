@@ -17,7 +17,7 @@ public interface BasicIO {
 	 * @param file file to open.
 	 * @return <code>true</code> if successful.
 	 */
-	public boolean open( File file );
+	public boolean open(File file);
 
 	/**
 	 * Close file.

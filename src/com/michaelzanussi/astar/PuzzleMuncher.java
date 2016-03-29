@@ -1099,21 +1099,21 @@ public class PuzzleMuncher {
 					ShortestPathsNonMono bcl = (ShortestPathsNonMono)_getCityList( data[BEGIN] );
 					// Retrieve the ending city's list of destination cities.
 					ShortestPathsNonMono ecl = (ShortestPathsNonMono)_getCityList( data[END] );
-					ecl._parent = bcl;
+					ecl.parent = bcl;
 					
 					// Setup link to end state.
 					ShortestPathsNonMono endCity = new ShortestPathsNonMono( 
 							data[END], 
 							Double.parseDouble( data[DISTANCE] ), 
 							bcl );
-					bcl._children.add( endCity );
+					bcl.children.add( endCity );
 					
 					// Setup link to start state.
 					ShortestPathsNonMono beginCity = new ShortestPathsNonMono(
 							data[BEGIN],
 							Double.parseDouble( data[DISTANCE] ),
 							ecl );
-					ecl._children.add( beginCity );
+					ecl.children.add( beginCity );
 					
 				}
 				
@@ -1128,8 +1128,8 @@ public class PuzzleMuncher {
 					while( llit.hasNext() ) {
 						
 						ShortestPathsNonMono sp = (ShortestPathsNonMono)llit.next();
-						List cityList = ((ShortestPathsNonMono)map.get( sp.getLabel() ))._children;
-						sp._children = cityList;
+						List cityList = ((ShortestPathsNonMono)map.get( sp.getLabel() )).children;
+						sp.children = cityList;
 						
 					}
 					
@@ -1146,21 +1146,21 @@ public class PuzzleMuncher {
 					ShortestPathsMono bcl = (ShortestPathsMono)_getCityList( data[BEGIN] );
 					// Retrieve the ending city's list of destination cities.
 					ShortestPathsMono ecl = (ShortestPathsMono)_getCityList( data[END] );
-					ecl._parent = bcl;
+					ecl.parent = bcl;
 					
 					// Setup link to end state.
 					ShortestPathsMono endCity = new ShortestPathsMono( 
 							data[END], 
 							Double.parseDouble( data[DISTANCE] ), 
 							bcl );
-					bcl._children.add( endCity );
+					bcl.children.add( endCity );
 					
 					// Setup link to start state.
 					ShortestPathsMono beginCity = new ShortestPathsMono(
 							data[BEGIN],
 							Double.parseDouble( data[DISTANCE] ),
 							ecl );
-					ecl._children.add( beginCity );
+					ecl.children.add( beginCity );
 					
 				}
 
@@ -1176,8 +1176,8 @@ public class PuzzleMuncher {
 					while( llit.hasNext() ) {
 						
 						ShortestPathsMono sp = (ShortestPathsMono)llit.next();
-						List cityList = ((ShortestPathsMono)map.get( sp.getLabel() ))._children;
-						sp._children = cityList;
+						List cityList = ((ShortestPathsMono)map.get( sp.getLabel() )).children;
+						sp.children = cityList;
 						
 					}
 					
@@ -1376,7 +1376,7 @@ public class PuzzleMuncher {
 				if( _hName.equals( "ShortestPathsNonMono" ) ) {
 					
 					ShortestPathsNonMono sp = new ShortestPathsNonMono( city, 0.0, null );
-					sp._children = new LinkedList();
+					sp.children = new LinkedList();
 					map.put( city, sp );
 					
 				}
@@ -1384,7 +1384,7 @@ public class PuzzleMuncher {
 				else if( _hName.equals( "ShortestPathsMono" ) ) {
 					
 					ShortestPathsMono sp = new ShortestPathsMono( city, 0.0, null );
-					sp._children = new LinkedList();
+					sp.children = new LinkedList();
 					map.put( city, sp );
 					
 				}

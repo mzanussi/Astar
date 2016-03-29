@@ -10,16 +10,16 @@ package com.michaelzanussi.astar;
 public class ShortestPathsNonMono extends AbstractShortestPaths {
 
 	/**
-	 * Standard constuctor.
+	 * Standard constructor.
 	 * 
 	 * @param city the name of the city.
 	 * @param distance the cost to travel to this city 
 	 * from the "parent" city.
-	 * @param parent the city we travelled from.
+	 * @param parent the city we traveled from.
 	 */
-	public ShortestPathsNonMono( String city, double distance, PuzState parent ) {
+	public ShortestPathsNonMono(String city, double distance, PuzState parent) {
 		
-		super( city, distance, parent );
+		super(city, distance, parent);
 		
 	}
 
@@ -32,9 +32,9 @@ public class ShortestPathsNonMono extends AbstractShortestPaths {
 	 * @return <code>true</code> if this object is the same as the obj
      * argument; <code>false</code> otherwise.
 	 */
-	public boolean equals( Object o ) {
+	public boolean equals(Object o) {
 		
-		return ( _city.compareTo( ((ShortestPathsNonMono)o).getLabel() ) == 0 );
+		return (city.compareTo(((ShortestPathsNonMono)o).getLabel()) == 0);
 		
 	}
 
@@ -51,9 +51,8 @@ public class ShortestPathsNonMono extends AbstractShortestPaths {
 	 */
 	public double heuristic() throws NullPointerException {
 		
-		if( _theGoal == null ) {
-			throw new NullPointerException( "ShortestPathsNonMono.heuristic error: " +
-					"Goal state has not been set." );
+		if (theGoal == null) {
+			throw new NullPointerException("ShortestPathsNonMono.heuristic error: Goal state has not been set.");
 		}
 		
 		// Straight-line distance would work great here; however,
@@ -62,9 +61,8 @@ public class ShortestPathsNonMono extends AbstractShortestPaths {
 		double h = Double.MAX_VALUE;
 		
 		// *DEBUG*
-		if( Global.getDebug() ) {
-			System.out.println( "*DEBUG* [" + _city + "]  _g = " +
-					_g + ", h = " + h + ", Heuristic() = " + ( _g + h ) );
+		if (Global.getDebug()) {
+			System.out.println("*DEBUG* [" + city + "]  g = " + g + ", h = " + h + ", Heuristic() = " + (g + h));
 		}
 		
 		// Ignore _g altogether.

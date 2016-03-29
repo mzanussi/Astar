@@ -30,8 +30,8 @@ public class TextFileReader extends AbstractFileReader {
 		
 		try {
 			string = buffer.readLine();
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 
 		return string;

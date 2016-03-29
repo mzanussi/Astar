@@ -7,7 +7,7 @@ package com.michaelzanussi.astar;
  * one bank of a river, together with a boat that can carry passengers. Initially, 
  * missionaries <tt>&lt;=</tt> cannibals. The object is to reach a state in which all 
  * missionaries and cannibals are on the other bank of the river. The difficulty is 
- * that if the missionaries ever outnumber the cannibals on either side of the river, 
+ * that if the missionaries ever out number the cannibals on either side of the river, 
  * that group of missionaries eats their unfortunate cannibal associates. To 
  * successfully solve the puzzle, no cannibals may be devoured.<p> 
  * 
@@ -65,20 +65,20 @@ public interface MandC {
 	 * 
 	 * @param value the boat capacity.
 	 */
-	public void setBoatCapacity( int value );
+	public void setBoatCapacity(int value);
 	
 	/**
 	 * Set the total number of cannibals in the current puzzle.
 	 * 
 	 * @param value the total number of cannibals.
 	 */
-	public void setTotalC( int value );
+	public void setTotalC(int value);
 	
 	/**
 	 * Set the total number of missionaries in the current puzzle.
 	 * 
 	 * @param value the total number of missionaries.
 	 */
-	public void setTotalM( int value );
+	public void setTotalM(int value);
 	
 }

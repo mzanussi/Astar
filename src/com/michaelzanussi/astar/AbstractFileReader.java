@@ -36,21 +36,20 @@ public abstract class AbstractFileReader extends Reader implements BasicIO {
 	 * @param file the file to open or <code>null</code> for standard input.
 	 * @return <code>true</code> if successful.
 	 */
-	public boolean open( File file ) {
+	public boolean open(File file) {
 		
 		try {
-			if( file == null ) {
+			if (file == null) {
 				// Standard input. 
-				buffer = new BufferedReader( new InputStreamReader( System.in ) );
-			}
-			else {	
+				buffer = new BufferedReader(new InputStreamReader(System.in));
+			} else {	
 				// Direct file.
-				buffer = new BufferedReader( new FileReader( file ) );
+				buffer = new BufferedReader(new FileReader(file));
 			}
 			return true;
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
-			System.exit( 1 );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
+			System.exit(1);
 		}
 		
 		return false;
@@ -65,21 +64,25 @@ public abstract class AbstractFileReader extends Reader implements BasicIO {
 	public void close() {
 		
 		try {
-			if( buffer != null ) {
+			if (buffer != null) {
 				buffer.close();
 			}
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}
 
-	public int read( char cbuf[], int off, int len ) throws IOException {
+	/* (non-Javadoc)
+	 * @see java.io.Reader#read(char[], int, int)
+	 */
+	public int read(char cbuf[], int off, int len) throws IOException {
+		
 		// Although this method is abstract in the abstract Reader
 		// class, we're not going to implement it here. We'll let
 		// derived subclasses deal with it if they want. 
-		throw new UnsupportedOperationException( "The 'read' operation is not" +
-				"supported at this time." );
+		throw new UnsupportedOperationException("The 'read' operation is not supported at this time.");
+		
 	}
 	
 }

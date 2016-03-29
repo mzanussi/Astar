@@ -16,38 +16,38 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	/**
 	 * The cannibal count.
 	 */
-	protected int _c;
+	protected int c;
 	
 	/**
 	 * The missionary count.
 	 */
-	protected int _m;
+	protected int m;
 	
 	/**
 	 * The current bank the boat is located at.
 	 */
-	protected int _bank;
+	protected int bank;
 	
 	/**
 	 * The boat capacity.
 	 */
-	protected int _capacity;
+	protected int capacity;
 	
 	/**
 	 * A string representation of this state's cannibals,
 	 * missionaries, and bank. For example: 3,3,1
 	 */
-	protected String _string;
+	protected String string;
 	
 	/**
 	 * The puzzle's total number of cannibals.
 	 */
-	protected int _totalC;
+	protected int totalC;
 
 	/**
 	 * The puzzle's total number of cannibals.
 	 */
-	protected int _totalM;
+	protected int totalM;
 	
 	/**
 	 * Standard constuctor.
@@ -59,28 +59,24 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 * @throws IllegalArgumentException If any of the constructor arguments
 	 * are invalid.
 	 */
-	public AbstractMandC( int c, int m, int bank, PuzState parent ) throws IllegalArgumentException {
+	public AbstractMandC(int c, int m, int bank, PuzState parent) throws IllegalArgumentException {
 		
 		super();
 		
-		if( m < 0 || c < 0 || bank < 0 || bank > 1 ) {
-			throw new IllegalArgumentException( "AbstractMandC.AbstractMandC error: " +
-					"Illegal constructor arguments: c = " + c + ", m = " + m + ", bank = " +
-					bank + ", parent = " + parent );
+		if (m < 0 || c < 0 || bank < 0 || bank > 1) {
+			throw new IllegalArgumentException("AbstractMandC.AbstractMandC error: Illegal constructor arguments: c = " + c + ", m = " + m + ", bank = " + bank + ", parent = " + parent);
 		}
 		
-		_c = c;
-		_m = m;
-		_bank = bank;
-		_parent = parent;
+		this.c = c;
+		this.m = m;
+		this.bank = bank;
+		super.parent = parent;
 		
-		_totalC = 0;
-		_totalM = 0;
+		totalC = 0;
+		totalM = 0;
 		
 		// This state's label (e.g. 3,3,1).
-		_string = Integer.toString( _c ) + "," + 
-		Integer.toString( _m ) + "," + 
-		Integer.toString( _bank );
+		string = Integer.toString(this.c) + "," + Integer.toString(this.m) + "," + Integer.toString(this.bank);
 		
 	}
 
@@ -96,7 +92,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 *
 	 * @return Iterator over the children state of this node.
 	 */
-	public abstract Iterator children();
+	public abstract Iterator<Object> children();
 
 	/**
 	 * Return the distance from the start state, or <code>g(s)</code>.  
@@ -107,7 +103,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 */
 	public double distFromStart() {
 		
-		return ( _parent == null ? 0.0 : _parent.distFromStart() + 1.0 );
+		return (parent == null ? 0.0 : parent.distFromStart() + 1.0);
 		
 	}
 	
@@ -122,7 +118,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 * @return <code>true</code> if this object is the same as the obj
 	 * argument; <code>false</code> otherwise.
 	 */
-	public abstract boolean equals( Object o );
+	public abstract boolean equals(Object o);
 
 	/**
 	 * Returns the boat location.
@@ -131,7 +127,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 */
 	public int getBank() { 
 		
-		return _bank; 
+		return bank; 
 		
 	}
 	
@@ -142,7 +138,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 */
 	public int getC() { 
 		
-		return _c; 
+		return c; 
 		
 	}
 	
@@ -164,7 +160,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 */
 	public String getLabel() { 
 		
-		return _string; 
+		return string; 
 		
 	}
 	
@@ -175,7 +171,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 */
 	public int getM() { 
 		
-		return _m; 
+		return m; 
 		
 	}
 	
@@ -187,7 +183,7 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 */
 	public int hashCode() {
 		
-		return _string.hashCode();
+		return string.hashCode();
 		
 	}
 	
@@ -212,14 +208,13 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 * @param value the boat capacity.
 	 * @throws IllegalArgumentException If boat capacity <= 0.
 	 */
-	public void setBoatCapacity( int value ) throws IllegalArgumentException {
+	public void setBoatCapacity(int value) throws IllegalArgumentException {
 		
-		if( value < 1 ) {
-			throw new IllegalArgumentException( "AbstractMandC.setBoatCapacity error: " +
-					"Boat capacity must be > 0. Received: " + value );
+		if (value < 1) {
+			throw new IllegalArgumentException("AbstractMandC.setBoatCapacity error: Boat capacity must be > 0. Received: " + value);
 		}
 		
-		_capacity = value; 
+		capacity = value; 
 		
 	}
 	
@@ -232,14 +227,13 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 * (<code>g(s)</code>) for this node.
 	 * @throws IllegalArgumentException If <code>d</code> is less than 0.0.
 	 */
-	public void setDistFromStart( double d ) throws IllegalArgumentException {
+	public void setDistFromStart(double d) throws IllegalArgumentException {
 
-		if( d < 0.0 ) {
-			throw new IllegalArgumentException( "AbstractMandC.setDistFromStart error: " +
-					"Cost/distance must be >= 0.0. Received: " + d );
+		if (d < 0.0) {
+			throw new IllegalArgumentException( "AbstractMandC.setDistFromStart error: Cost/distance must be >= 0.0. Received: " + d );
 		}
 		
-		_g = d;
+		g = d;
 		
 	}
 	
@@ -249,14 +243,13 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 * @param value the total number of cannibals.
 	 * @throws IllegalArgumentException If <code>value</code> < 0.
 	 */
-	public void setTotalC( int value ) throws IllegalArgumentException { 
+	public void setTotalC(int value) throws IllegalArgumentException { 
 		
-		if( value < 0 ) {
-			throw new IllegalArgumentException( "AbstractMandC.setTotalC error: " +
-					"Cannibals must be >= 0. Received: " + value );
+		if (value < 0) {
+			throw new IllegalArgumentException("AbstractMandC.setTotalC error: Cannibals must be >= 0. Received: " + value);
 		}
 		
-		_totalC = value; 
+		totalC = value; 
 		
 	}
 	
@@ -266,14 +259,13 @@ public abstract class AbstractMandC extends AbstractPuzState implements MandC {
 	 * @param value the total number of missionaries.
 	 * @throws IllegalArgumentException If <code>value</code> < 0.
 	 */
-	public void setTotalM( int value ) throws IllegalArgumentException { 
+	public void setTotalM(int value) throws IllegalArgumentException { 
 		
-		if( value < 0 ) {
-			throw new IllegalArgumentException( "AbstractMandC.setTotalM error: " +
-					"Missionaries must be >= 0. Received: " + value );
+		if (value < 0) {
+			throw new IllegalArgumentException("AbstractMandC.setTotalM error: Missionaries must be >= 0. Received: " + value);
 		}
 		
-		_totalM = value; 
+		totalM = value; 
 		
 	}
 	

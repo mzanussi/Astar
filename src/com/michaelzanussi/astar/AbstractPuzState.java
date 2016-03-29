@@ -15,31 +15,31 @@ public abstract class AbstractPuzState implements PuzState {
 	/**
 	 * Distance from the start.
 	 */
-	protected double _g;
+	protected double g;
 	
 	/**
 	 * The parent state of this state.
 	 */
-	protected PuzState _parent;
+	protected PuzState parent;
 
 	/**
 	 * The children (if any) of this state.
 	 */
-	protected List _children;
+	protected List<Object> children;
 	
 	/**
 	 * Provides access to the goal state. 
 	 */
-	protected static PuzState _theGoal;
+	protected static PuzState theGoal;
 	
 	/**
 	 * No-arg constructor.
 	 */
 	public AbstractPuzState() {
 		
-		_g = Double.POSITIVE_INFINITY;
-		_parent = null;
-		_children = null;
+		g = Double.POSITIVE_INFINITY;
+		parent = null;
+		children = null;
 
 	}
 	
@@ -47,13 +47,13 @@ public abstract class AbstractPuzState implements PuzState {
 	 * Return an iterator over the children of the current node.  If no
 	 * children are available, the iterator should simply return
 	 * <CODE>false</CODE> for <CODE>hasNext()</CODE>. This method will be
-	 * typically overriden in subclasses.
+	 * typically overridden in subclasses.
 	 *
 	 * @return Iterator over the children state of this node.
 	 */
-	public Iterator children() {
+	public Iterator<Object> children() {
 		
-		return _children.iterator();
+		return children.iterator();
 		
 	}
 
@@ -67,7 +67,7 @@ public abstract class AbstractPuzState implements PuzState {
 	 */
 	public double distFromStart() {
 		
-		return _g;
+		return g;
 		
 	}
 	
@@ -89,7 +89,7 @@ public abstract class AbstractPuzState implements PuzState {
 	 * Returns the hash code value for this object. Needed mainly by the
 	 * <code>HashMap</code> in <code>HashingHeap</code>.<p>
 	 * 
-	 * For <code>PuzzleMuncher</code> to operate propertly, this method
+	 * For <code>PuzzleMuncher</code> to operate properly, this method
 	 * must be implemented in subclasses of <code>AbstractPuzState</code>.
 	 *
 	 * @return the hash code value for this object.
@@ -120,7 +120,7 @@ public abstract class AbstractPuzState implements PuzState {
 	 */
 	public PuzState parent() {
 		
-		return _parent;
+		return parent;
 		
 	}
 	
@@ -132,7 +132,7 @@ public abstract class AbstractPuzState implements PuzState {
 	 * @param d new value for the cost-from-start function
 	 * (<code>g(s)</code>) for this node.
 	 */
-	public abstract void setDistFromStart( double d );
+	public abstract void setDistFromStart(double d);
 	
 	/**
 	 * Sets the goal state static var <code>_theGoal</code>.
@@ -141,14 +141,13 @@ public abstract class AbstractPuzState implements PuzState {
 	 * @throws NullPointerException If the goal state <code>g</code>
 	 * is <code>null</code>.
 	 */
-	public void setGoal( PuzState g ) {
+	public void setGoal(PuzState g) {
 		
-		if( g == null ) {
-			throw new NullPointerException( "AbstractPuzState.setGoal error: " +
-					"Goal state cannot be null." );
+		if (g == null) {
+			throw new NullPointerException("AbstractPuzState.setGoal error: Goal state cannot be null.");
 		}
 		
-		_theGoal = g;
+		theGoal = g;
 		
 	}
 	

@@ -1,6 +1,9 @@
 package com.michaelzanussi.astar;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * Wrapper class around Java's <code>ObjectInputStream</code> class (serialization).
@@ -28,14 +31,14 @@ public class SerializedFileReader implements BasicIO {
 	 * @param file the file to open.
 	 * @return <code>true</code> if successful.
 	 */
-	public boolean open( File file ) {
+	public boolean open(File file) {
 
 		try {
-			input = new ObjectInputStream( new FileInputStream( file ) );
+			input = new ObjectInputStream(new FileInputStream(file));
 			return true;
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
-			System.exit( 1 );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
+			System.exit(1);
 		}
 		
 		return false;
@@ -50,11 +53,11 @@ public class SerializedFileReader implements BasicIO {
 	public void close() {
 		
 		try {
-			if( input != null ) {
+			if (input != null) {
 				input.close();
 			}
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}
@@ -70,10 +73,10 @@ public class SerializedFileReader implements BasicIO {
 		
 		try {
 			object = input.readObject();
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
-		} catch ( ClassNotFoundException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
+		} catch (ClassNotFoundException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 		return object;

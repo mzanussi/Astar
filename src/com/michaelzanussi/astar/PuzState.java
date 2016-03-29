@@ -80,7 +80,7 @@ public interface PuzState {
    *
    * @return Iterator over the children state of this node.
    */
-  public Iterator children();
+  public Iterator<Object> children();
 
   /**
    * Retrieve the parent of the current node.  This should return a

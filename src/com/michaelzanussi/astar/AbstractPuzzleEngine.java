@@ -1,6 +1,6 @@
 package com.michaelzanussi.astar;
 
-import java.util.*;
+import java.util.LinkedList;
 
 /**
  * This class provides a skeletal implementation of the <tt>PuzzleEngine</tt>
@@ -15,17 +15,17 @@ public abstract class AbstractPuzzleEngine implements PuzzleEngine {
 	/**
 	 * The starting puzzle state.
 	 */
-	protected PuzState _start;
+	protected PuzState start;
 	
 	/**
 	 * The ending puzzle state.
 	 */
-	protected PuzState _goal;
+	protected PuzState goal;
 
 	/**
 	 * Is the heuristic monotonic?
 	 */
-	protected boolean _monotonic;
+	protected boolean monotonic;
 		
 	/**
 	 * Standard constructor.
@@ -33,14 +33,14 @@ public abstract class AbstractPuzzleEngine implements PuzzleEngine {
 	 * @param start the starting puzzle state.
 	 * @param goal the ending puzzle state.
 	 */
-	public AbstractPuzzleEngine( PuzState start, PuzState goal ) {
+	public AbstractPuzzleEngine(PuzState start, PuzState goal) {
 		
-		_start = start;
-		_goal = goal;
+		this.start = start;
+		this.goal = goal;
 
-		// The heuristice is monontonic if it implements the marker
+		// The heuristic is monotonic if it implements the marker
 		// interface Monotonic.
-		_monotonic = ( _start instanceof Monotonic ? true : false );
+		monotonic = (this.start instanceof Monotonic ? true : false);
 		
 	}
 	
@@ -57,6 +57,6 @@ public abstract class AbstractPuzzleEngine implements PuzzleEngine {
 	 * @return the goal puzzle state if a path is found, or <code>null</code> 
 	 * if no path exists.
 	 */
-	public abstract LinkedList path();
+	public abstract LinkedList<Object> path();
 
 }

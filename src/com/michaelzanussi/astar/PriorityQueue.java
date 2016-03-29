@@ -2,7 +2,7 @@ package com.michaelzanussi.astar;
 
 /**
  * A standard interface for a priority queue data structure. A
- * more general interace would use <code>Object</code> rather than
+ * more general interface would use <code>Object</code> rather than
  * <code>PuzState</code>, but for this project <code>PuzState</code>
  * allows for a simpler implementation to be utilized.
  * 
@@ -16,7 +16,7 @@ public interface PriorityQueue {
 	 * 
 	 * @param key the element to insert into the priority queue.
 	 */
-	public void insertItem( PuzState key );
+	public void insertItem(PuzState key);
 	
 	/**
 	 * Tests whether the priority queue is empty or not.

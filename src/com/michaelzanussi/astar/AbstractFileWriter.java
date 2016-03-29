@@ -33,14 +33,14 @@ public abstract class AbstractFileWriter implements BasicIO {
 	 * @param file the file to open.
 	 * @return <code>true</code> if successful.
 	 */
-	public boolean open( File file ) {
+	public boolean open(File file) {
 
 		try {
-			buffer = new BufferedWriter( new FileWriter( file, true ) );
+			buffer = new BufferedWriter(new FileWriter(file, true));
 			return true;
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
-			System.exit( 1 );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
+			System.exit(1);
 		}
 		
 		return false;
@@ -55,11 +55,11 @@ public abstract class AbstractFileWriter implements BasicIO {
 	public void close() {
 		
 		try {
-			if( buffer != null ) {
+			if (buffer != null) {
 				buffer.close();
 			}
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}

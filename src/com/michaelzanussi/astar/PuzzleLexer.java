@@ -58,7 +58,7 @@ public final class PuzzleLexer extends AbstractLexer {
 			throw new NullPointerException("PuzzleLexer.PuzzleLexer error: PuzzleLexer requires a Reader.");
 		}
 		
-		this.in = in;
+		super.in = in;
 		state = STATE_NONE;
 		
 	}
@@ -374,7 +374,7 @@ public final class PuzzleLexer extends AbstractLexer {
 		// Append current character to token.
 		token.append(ch);
 		// Set the next state.
-		this.state = state;
+		super.state = state;
 		// Set the current token type being processed.
 		this.type = type;
 		
@@ -425,7 +425,7 @@ public final class PuzzleLexer extends AbstractLexer {
 		// Empty the contents of the current token.
 		token.delete(0, token.length());
 		// Set the next state.
-		this.state = state;
+		super.state = state;
 		
 		return ntoken;
 		
@@ -455,7 +455,7 @@ public final class PuzzleLexer extends AbstractLexer {
 		// Append the current character to token.
 		token.append(ch);
 		// Set the next state.
-		this.state = state;
+		super.state = state;
 		
 		return ntoken;
 		

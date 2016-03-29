@@ -1,6 +1,6 @@
 package com.michaelzanussi.astar;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Wrapper class around Java's <code>BufferedWriter</code> class.
@@ -15,12 +15,12 @@ public class TextFileWriter extends AbstractFileWriter {
 	 * 
 	 * @param string the string to write to the buffer.
 	 */
-	public void write( String string ) {
+	public void write(String string) {
 		
 		try {
-			buffer.write( string );
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+			buffer.write(string);
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}
@@ -30,13 +30,13 @@ public class TextFileWriter extends AbstractFileWriter {
 	 * 
 	 * @param string the string to write to the buffer.
 	 */
-	public void writeln( String string ) {
+	public void writeln(String string) {
 		
 		try {
-			buffer.write( string );
+			buffer.write(string);
 			buffer.newLine();
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}
@@ -48,8 +48,8 @@ public class TextFileWriter extends AbstractFileWriter {
 		
 		try {
 			buffer.newLine();
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}

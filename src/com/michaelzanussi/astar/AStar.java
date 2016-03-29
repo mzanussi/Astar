@@ -1,6 +1,9 @@
 package com.michaelzanussi.astar;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * The A* algorithm for puzzle solving. Supports both admissible and
@@ -27,8 +30,8 @@ public class AStar extends AbstractPuzzleEngine {
 	// engine because HashingHeap and the open/closed queues are 
 	// unique to the A* algorithm and the AbstractPuzzleEngine 
 	// class shouldn't lock into a particular data structure.
-	private HashingHeap _open;
-	private Map _closed;
+	private HashingHeap open;
+	private Map<Object, Object> closed;
 	
 	/**
 	 * Standard constructor for creation of an A* object.
@@ -36,11 +39,11 @@ public class AStar extends AbstractPuzzleEngine {
 	 * @param start the start puzzle state.
 	 * @param goal the ending goal state.
 	 */
-	public AStar( PuzState start, PuzState goal ) {
+	public AStar(PuzState start, PuzState goal) {
 		
-		super( start, goal );
-		_open = new HashingHeap();
-		_closed = new HashMap();
+		super(start, goal);
+		open = new HashingHeap();
+		closed = new HashMap<Object, Object>();
 		
 	}
 	
@@ -54,31 +57,30 @@ public class AStar extends AbstractPuzzleEngine {
 	 * @throws IllegalStateException If system times out searching for a path.
 	 * @throws IndexOutOfBoundsException If bounds have been exceeded.
 	 */
-	public LinkedList path() throws IllegalStateException, IndexOutOfBoundsException {
+	public LinkedList<Object> path() throws IllegalStateException, IndexOutOfBoundsException {
 
-		PuzStateWrapper start = new PuzStateWrapper( _start, 0, null );
-		_open.insertItem( start );
+		PuzStateWrapper psw = new PuzStateWrapper(start, 0, null);
+		open.insertItem(psw);
 		
-		while( !_open.isEmpty() ) {
+		while (!open.isEmpty()) {
 			
 			// Have we timed out?
-			if( Global.isTimeUp() ) {
-				throw new IllegalStateException( "AStar.path error: System timed out " +
-						"searching for a solution." );
+			if (Global.isTimeUp()) {
+				throw new IllegalStateException("AStar.path error: System timed out searching for a solution.");
 			}
 			
 			// Pop off the state with the smallest heuristic.
-			PuzStateWrapper parent = (PuzStateWrapper)_open.removeMin();
+			PuzStateWrapper parent = (PuzStateWrapper)open.removeMin();
 
 			// Increment global nodes opened.
 			Global.incNodesOpened();
 
 			// Are we at the goal?
-			if( parent.goalP() ) {
+			if (parent.goalP()) {
 				
 				// It's the goal. Create a linked list containing the
 				// path back to the start.
-				LinkedList path = new LinkedList();
+				LinkedList<Object> path = new LinkedList<Object>();
 				PuzStateWrapper s = parent;
 				while (s != null) {
 					path.add(s.getState());
@@ -86,7 +88,7 @@ public class AStar extends AbstractPuzzleEngine {
 				}
 				
 				// Set global nodes closed.
-				Global.setNodesClosed( _closed.size() );
+				Global.setNodesClosed(closed.size());
 				
 				// Return the goal path.
 				return path;
@@ -94,62 +96,60 @@ public class AStar extends AbstractPuzzleEngine {
 			}
 			
 			// If applicable, print the current state.
-			if( Global.reportStatePath() ) {
-				Global.output( parent.toString() );
+			if (Global.reportStatePath()) {
+				Global.output(parent.toString());
 			}
 			
 			// Start looking at this state's children.
-			Iterator it = parent.getState().children();
-			while( it.hasNext() ) {
+			Iterator<Object> it = parent.getState().children();
+			while (it.hasNext()) {
 				
 				// Grab a child from the parent and wrap it up.
 				PuzState child = (PuzState)it.next();
-				PuzStateWrapper newChild = new PuzStateWrapper( child, child.distFromStart(), parent );
+				PuzStateWrapper newChild = new PuzStateWrapper(child, child.distFromStart(), parent);
 				
 				// If applicable, print the newly visited child state.
-				if( Global.reportStatePath() ) {
-					Global.output( newChild.toString() );
+				if (Global.reportStatePath()) {
+					Global.output(newChild.toString());
 				}
 				
 				// Is this child on the closed list?
-				if( _closed.containsKey( newChild ) ) {
+				if (closed.containsKey(newChild)) {
 					
 					// Check if this child's heuristic is less than what's
 					// already on the open list (non-monotonic only).
-					if( !_monotonic && newChild.heuristic() < ((PuzStateWrapper)(_closed.get( newChild ))).heuristic() ) {
+					if (!monotonic && newChild.heuristic() < ((PuzStateWrapper)(closed.get(newChild))).heuristic()) {
 						
 						// We've found a better path. Remove the old
 						// child from the closed list and add the
 						// new one onto the open list for later visitation.
-						_closed.remove( newChild );
-						_open.insertItem( newChild );
+						closed.remove(newChild);
+						open.insertItem(newChild);
 						
 						// Increment global nodes reopened.
 						Global.incNodesReopened();
 						
-					}
-					else {
+					} else {
 						// Not a better path. Ignore this child and continue.
 						continue;
 					}
 				}
 				// Is this child on the open list?
-				else if( _open.contains( newChild ) ) {
+				else if (open.contains(newChild)) {
 					
 					// Check if this child's heuristic is less than what's
 					// already on the open list (non-monotonic only).
-					double a = newChild.heuristic();
-					double b = (_open.get( newChild ) ).heuristic();
-					if( !_monotonic && newChild.heuristic() < (_open.get( newChild ) ).heuristic() ) {
+					double newH = newChild.heuristic();
+					double openH = (open.get(newChild)).heuristic();
+					if (!monotonic && newH < openH) {
 						
 						// We've found a better path. Remove the old
 						// child from the open list and add the new
 						// one onto the open list for later visitation.
-						_open.remove( newChild );
-						_open.insertItem( newChild );
+						open.remove(newChild);
+						open.insertItem(newChild);
 
-					}
-					else {
+					} else {
 						// Not a better path. Ignore this child and continue. 
 						continue;
 					}
@@ -158,33 +158,28 @@ public class AStar extends AbstractPuzzleEngine {
 				// It's a state we haven't seen, so put it on the
 				// open list for visitation later.
 				else {
-					_open.insertItem( newChild );
+					open.insertItem(newChild);
 				}
 				
 				// Verify we haven't reached the total nodes bound yet.
-				if( ( _closed.size() + _open.size() ) > Global.getTotalNodesBound() ) {
-					throw new IndexOutOfBoundsException( "AStar.path error: " +
-							"TotalNodesBound exceeded. Set to: " +
-							Global.getTotalNodesBound() + ", Current count: " +
-							( _closed.size() + _open.size() ) );
+				if ((closed.size() + open.size()) > Global.getTotalNodesBound()) {
+					throw new IndexOutOfBoundsException( "AStar.path error: TotalNodesBound exceeded. Set to: " + Global.getTotalNodesBound() + ", Current count: " + (closed.size() + open.size()));
 				}
 				
 			}
 			
 			// We're done processing this state. Put it on the closed
 			// list and continue searching.
-			_closed.put( parent, parent );
+			closed.put(parent, parent);
 			
 			// Record the list sizes and then calculate the open/closed
 			// ratio (performed by setClosedListSize and setOpenListSize).
-			Global.setClosedListSize( _closed.size() );
-			Global.setOpenListSize( _open.size() );
+			Global.setClosedListSize(closed.size());
+			Global.setOpenListSize(open.size());
 			
 			// Verify we haven't reached the total nodes bound yet.
-			if( ( _closed.size() + _open.size() ) > Global.getTotalNodesBound() ) {
-				throw new IndexOutOfBoundsException( "AStar.path error: TotalNodesBound " +
-						"exceeded. Set to: " + Global.getTotalNodesBound() + ", Current " +
-						"count: " + ( _closed.size() + _open.size() ) );
+			if ((closed.size() + open.size()) > Global.getTotalNodesBound()) {
+				throw new IndexOutOfBoundsException( "AStar.path error: TotalNodesBound exceeded. Set to: " + Global.getTotalNodesBound() + ", Current count: " + (closed.size() + open.size()));
 			}
 			
 		}
@@ -208,7 +203,7 @@ public class AStar extends AbstractPuzzleEngine {
 	private class PuzStateWrapper extends AbstractPuzState {
 
 		// The puzzle state that requires wrapping.
-		private PuzState _wrappedState;
+		private PuzState wrappedState;
 		
 		/**
 		 * Standard constructor to build a wrapped PuzState object.
@@ -217,14 +212,14 @@ public class AStar extends AbstractPuzzleEngine {
 		 * @param cost the cost to get to this state.
 		 * @param parent the wrapped state's parent, if any.
 		 */
-		public PuzStateWrapper( PuzState state, double cost, PuzStateWrapper parent ) {
+		public PuzStateWrapper(PuzState state, double cost, PuzStateWrapper parent) {
 
 			// Set the current state and parent state.
-			_wrappedState = state;
-			_parent = parent;
+			wrappedState = state;
+			super.parent = parent;
 			
 			// Set the cost-from-start, g().
-			setDistFromStart( cost );
+			setDistFromStart(cost);
 			
 		}
 		
@@ -236,8 +231,8 @@ public class AStar extends AbstractPuzzleEngine {
 		 * @return <code>true</code> if this object is the same as the obj
 		 * argument; <code>false</code> otherwise.
 		 */
-		public boolean equals( Object o ) {
-			return ( hashCode() == o.hashCode() );
+		public boolean equals(Object o) {
+			return (hashCode() == o.hashCode());
 		}
 
 		/**
@@ -247,7 +242,7 @@ public class AStar extends AbstractPuzzleEngine {
 		 */
 		public PuzState getState() { 
 			
-			return _wrappedState; 
+			return wrappedState; 
 		
 		}
 		
@@ -259,7 +254,7 @@ public class AStar extends AbstractPuzzleEngine {
 		 */
 		public boolean goalP() {
 			
-			return ( _wrappedState.equals( _goal ) );
+			return (wrappedState.equals(goal));
 			
 		}
 		
@@ -272,7 +267,7 @@ public class AStar extends AbstractPuzzleEngine {
 		 */
 		public int hashCode() {
 			
-			return _wrappedState.hashCode();
+			return wrappedState.hashCode();
 			
 		}
 		
@@ -288,7 +283,7 @@ public class AStar extends AbstractPuzzleEngine {
 		 */
 		public double heuristic() {
 			
-			return _wrappedState.heuristic();
+			return wrappedState.heuristic();
 			
 		}
 		
@@ -299,15 +294,14 @@ public class AStar extends AbstractPuzzleEngine {
 		 * @param d new value for the cost-from-start function
 		 * (<code>g(s)</code>) for this node.
 		 */
-		public void setDistFromStart( double d ) {
+		public void setDistFromStart(double d) {
 			
-			if( _parent == null ) {
-				_g = 0.0;
-				_wrappedState.setDistFromStart( 0.0 );
-			}
-			else {
-				_g = d + _parent.distFromStart();
-				_wrappedState.setDistFromStart( d + _parent.distFromStart() );
+			if (parent == null) {
+				g = 0.0;
+				wrappedState.setDistFromStart(0.0);
+			} else {
+				g = d + parent.distFromStart();
+				wrappedState.setDistFromStart(d + parent.distFromStart());
 			}
 			
 		}
@@ -320,7 +314,7 @@ public class AStar extends AbstractPuzzleEngine {
 		 */
 		public String toString() {
 			
-			return _wrappedState.toString();
+			return wrappedState.toString();
 			
 		}
 				

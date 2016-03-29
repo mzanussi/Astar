@@ -17,37 +17,37 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * String representation of a location on the grid. 
 	 * For example: 1,2
 	 */
-	protected String _string;
+	protected String string;
 	
 	/**
 	 * X coordinate.
 	 */
-	protected int _x;
+	protected int xcoord;
 
 	/**
 	 * Y coordinate.
 	 */
-	protected int _y;
+	protected int ycoord;
 	
 	/**
 	 * Grid size (X axis).
 	 */
-	protected int _totalX;
+	protected int totalX;
 	
 	/**
 	 * Grid size (Y axis).
 	 */
-	protected int _totalY;
+	protected int totalY;
 	
 	/**
 	 * The distance from this location to its parent location.
 	 */
-	protected double _distance;
+	protected double distance;
 	
 	/**
 	 * The obstacle table.
 	 */
-	protected int[][] _obstacles;
+	protected int[][] obstacles;
 	
 	/**
 	 * Standard constructor.
@@ -57,17 +57,17 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * @param distance the distance from this location to its parent.
 	 * @param parent the parent location of this location.
 	 */
-	public AbstractGrid( int x, int y, double distance, PuzState parent ) {
+	public AbstractGrid(int x, int y, double distance, PuzState parent) {
 		
 		super();
-		_distance = distance;
-		_parent = parent;
+		this.distance = distance;
+		super.parent = parent;
 
-		_x = x;
-		_y = y;
+		xcoord = x;
+		ycoord = y;
 		
 		// This state's label (e.g. 3,3,1).
-		_string = Integer.toString( _x ) + "," + Integer.toString( _y );
+		string = Integer.toString(xcoord) + "," + Integer.toString(ycoord);
 		
 	}
 
@@ -80,7 +80,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 *
 	 * @return Iterator over the children state of this node.
 	 */
-	public abstract Iterator children();
+	public abstract Iterator<Object> children();
 
 	/**
 	 * Return the distance from the start state, or <code>g(s)</code>.  
@@ -91,7 +91,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public double distFromStart() {
 		
-		return ( _parent == null ? 0.0 : _parent.distFromStart() + _distance );
+		return (parent == null ? 0.0 : parent.distFromStart() + distance);
 		
 	}
 	
@@ -104,7 +104,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * @return <code>true</code> if these states are equal, otherwise
 	 * <code>false</code>
 	 */
-	public abstract boolean equals( Object o );
+	public abstract boolean equals(Object o);
 
 	/**
 	 * Returns the location.
@@ -113,7 +113,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public String getLabel() { 
 		
-		return _string; 
+		return string; 
 		
 	}
 
@@ -124,7 +124,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public double getDistance() { 
 		
-		return _distance; 
+		return distance; 
 		
 	}
 	
@@ -135,7 +135,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public int getX() { 
 		
-		return _x; 
+		return xcoord; 
 		
 	}
 	
@@ -146,7 +146,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public int getY() { 
 		
-		return _y; 
+		return ycoord; 
 		
 	}
 	
@@ -158,7 +158,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public int hashCode() {
 		
-		return _string.hashCode();
+		return string.hashCode();
 		
 	}
 	
@@ -184,14 +184,13 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * (<code>g(s)</code>) for this node.
 	 * @throws IllegalArgumentException If <code>d</code> is less than 0.0.
 	 */
-	public void setDistFromStart( double d ) throws IllegalArgumentException {
+	public void setDistFromStart(double d) throws IllegalArgumentException {
 
-		if( d < 0.0 ) {
-			throw new IllegalArgumentException( "AbstractGrid.setDistFromStart error: " +
-					"Cost/distance must be >= 0.0. Receieved: " + d );
+		if (d < 0.0) {
+			throw new IllegalArgumentException("AbstractGrid.setDistFromStart error: Cost/distance must be >= 0.0. Receieved: " + d);
 		}
 		
-		_g = d;
+		g = d;
 		
 	}
 	
@@ -200,9 +199,9 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * 
 	 * @param obstacles the obstacles table.
 	 */
-	public void setObstacles( int[][] obstacles ) {
+	public void setObstacles(int[][] obstacles) {
 		
-		_obstacles = obstacles;
+		this.obstacles = obstacles;
 		
 	}
 	
@@ -212,14 +211,13 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * @param value the total number of rows.
 	 * @throws IllegalArgumentException If <code>value</code> <= 0.
 	 */
-	public void setTotalX( int value ) throws IllegalArgumentException { 
+	public void setTotalX(int value) throws IllegalArgumentException { 
 		
-		if( value <= 0 ) {
-			throw new IllegalArgumentException( "AbstractGrid.setTotalX error: " +
-					"X must be > 0. Received: " + value );
+		if (value <= 0) {
+			throw new IllegalArgumentException("AbstractGrid.setTotalX error: X must be > 0. Received: " + value);
 		}
 		
-		_totalX = value; 
+		totalX = value; 
 		
 	}
 	
@@ -229,14 +227,13 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 * @param value the total number of columns.
 	 * @throws IllegalArgumentException If <code>value</code> < 0.
 	 */
-	public void setTotalY( int value ) throws IllegalArgumentException { 
+	public void setTotalY(int value) throws IllegalArgumentException { 
 		
-		if( value < 0 ) {
-			throw new IllegalArgumentException( "AbstractMandC.setTotalY error: " +
-					"Y must be > 0. Received: " + value );
+		if (value < 0) {
+			throw new IllegalArgumentException("AbstractMandC.setTotalY error: Y must be > 0. Received: " + value);
 		}
 		
-		_totalY = value; 
+		totalY = value; 
 		
 	}
 
@@ -247,7 +244,7 @@ public abstract class AbstractGrid extends AbstractPuzState implements Grid {
 	 */
 	public String toString() {
 		
-		return "Current state: " + _string + ", heursitic: " + heuristic();
+		return "Current state: " + string + ", heursitic: " + heuristic();
 		
 	}
 		

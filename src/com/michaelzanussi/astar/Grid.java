@@ -46,20 +46,20 @@ public interface Grid {
 	 * 
 	 * @param obstacles the obstacles table.
 	 */
-	public void setObstacles( int[][] obstacles );
+	public void setObstacles(int[][] obstacles);
 	
 	/**
 	 * Set the total number of rows.
 	 * 
 	 * @param value the total number of rows.
 	 */
-	public void setTotalX( int value );
+	public void setTotalX(int value);
 	
 	/**
 	 * Set the total number of columns.
 	 * 
 	 * @param value the total number of columns.
 	 */
-	public void setTotalY( int value );
+	public void setTotalY(int value);
 	
 }

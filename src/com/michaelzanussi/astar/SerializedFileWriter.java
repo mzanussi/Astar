@@ -1,6 +1,9 @@
 package com.michaelzanussi.astar;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
  * Wrapper class around Java's <code>ObjectOutputStream</code> class (serialization).
@@ -28,14 +31,14 @@ public class SerializedFileWriter implements BasicIO {
 	 * @param file the file to open.
 	 * @return <code>true</code> if successful.
 	 */
-	public boolean open( File file ) {
+	public boolean open(File file) {
 
 		try {
-			output = new ObjectOutputStream( new FileOutputStream( file ) );
+			output = new ObjectOutputStream(new FileOutputStream(file));
 			return true;
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
-			System.exit( 1 );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
+			System.exit(1);
 		}
 		
 		return false;
@@ -50,11 +53,11 @@ public class SerializedFileWriter implements BasicIO {
 	public void close() {
 		
 		try {
-			if( output != null ) {
+			if (output != null) {
 				output.close();
 			}
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}
@@ -65,17 +68,17 @@ public class SerializedFileWriter implements BasicIO {
 	 * @param object the object to serialize.
 	 * @throws NullPointerException if the object to serialize is <code>null</code>.
 	 */
-	public void writeObject( Object object ) {
+	public void writeObject(Object object) {
 		
-		if( object == null ) {
+		if (object == null) {
 			throw new NullPointerException();
 		}
 		
 		try {
-			output.writeObject( object );
+			output.writeObject(object);
 			output.flush();
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}

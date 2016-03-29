@@ -11,4 +11,4 @@ package com.michaelzanussi.astar;
  * @author Terran Lane
  * @version 1.0
  */
- public interface Monotonic {};
+public interface Monotonic {};

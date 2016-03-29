@@ -15,16 +15,16 @@ import java.util.LinkedList;
 public class MandCTrips extends AbstractMandC {
 
 	/**
-	 * Standard constuctor.
+	 * Standard constructor.
 	 * 
 	 * @param c the cannibals.
 	 * @param m the missionaries.
 	 * @param bank the boat location.
 	 * @param parent the previous state.
 	 */
-	public MandCTrips( int c, int m, int bank, PuzState parent ) {
+	public MandCTrips(int c, int m, int bank, PuzState parent) {
 		
-		super( c, m, bank, parent );
+		super(c, m, bank, parent);
 		
 	}
 
@@ -38,10 +38,10 @@ public class MandCTrips extends AbstractMandC {
 	 *
 	 * @return Iterator over the children state of this node.
 	 */
-	public Iterator children() {
+	public Iterator<Object> children() {
 		
 		// The child list.
-		_children = new LinkedList();
+		children = new LinkedList<Object>();
 		
 		// The possible successor states for a given M & C state is
 		// based on the boat capacity. That is, for a two-person
@@ -53,14 +53,14 @@ public class MandCTrips extends AbstractMandC {
 		// allowed). Given the possible moves, the danger of the
 		// cannibals being killed is then checked. Only those moves
 		// where the cannibals are safe are added to the child list.
-		for( int i = 0; i <= _capacity; i++ ) {
+		for (int i = 0; i <= capacity; i++) {
 			
-			for( int j = 0; j <= _capacity; j++ ) {
+			for (int j = 0; j <= capacity; j++) {
 				
 				// Discard null moves and moves where the sum of
 				// cannibals and missionaries exceeds the boat
 				// capacity.				
-				if( ( i + j ) > 0 && ( i + j ) <= _capacity ) {
+				if ((i + j) > 0 && (i + j) <= capacity) {
 					
 					// Initialization.
 					MandCTrips child = null;
@@ -73,25 +73,25 @@ public class MandCTrips extends AbstractMandC {
 					// current state, whereas from east to west
 					// successor states are added to the current
 					// state.					
-					if( _bank == WEST ) {
+					if (bank == WEST) {
 						
 						// Calculate new cannibal population.
-						c = _c - i;
+						c = super.c - i;
 						
 						// Ignore this successor state if the new
 						// cannibal population exceeds the max or
 						// there are a negative number of cannibals.
-						if( c > _totalC || c < 0 ) {
+						if (c > totalC || c < 0) {
 							continue;
 						}
 						
-						// Caclulate the new missionary population.
-						m = _m - j;
+						// Calculate the new missionary population.
+						m = super.m - j;
 						
 						// Ignore this successor state if the new
 						// missionary population exceeds the max or
 						// there are a negative number of missionaries.
-						if( m > _totalM || m < 0 ) {
+						if (m > totalM || m < 0) {
 							continue;
 						}
 						
@@ -99,28 +99,28 @@ public class MandCTrips extends AbstractMandC {
 						// state has at least 1 cannibal, check whether
 						// the cannibal(s) might get killed. If so, ignore
 						// this successor state.
-						if( c > 0 ) {
-							if( c < m ) {
+						if (c > 0) {
+							if (c < m) {
 								continue;
 							}
 						}
 						
 						// Also, make sure things are safe on the other bank.
 						// If not, ignore this successor state.
-						int otherC = _totalC - c;
-						int otherM = _totalM - m;
-						if( otherC > 0 ) { 
-							if( otherC < otherM ) {
+						int otherC = totalC - c;
+						int otherM = totalM - m;
+						if (otherC > 0) { 
+							if (otherC < otherM) {
 								continue;
 							}
 						}
 						
 						// We've found a good successor state! Add it to the
 						// children list and set a few variables.
-						child = new MandCTrips( c, m, EAST, this );
-						child.setTotalC( _totalC );
-						child.setTotalM( _totalM );
-						child.setBoatCapacity( _capacity );
+						child = new MandCTrips(c, m, EAST, this);
+						child.setTotalC(totalC);
+						child.setTotalM(totalM);
+						child.setBoatCapacity(capacity);
 						
 					}
 					
@@ -128,21 +128,22 @@ public class MandCTrips extends AbstractMandC {
 					else { 
 						
 						// Calculate new cannibal population.
-						c = _c + i;
+						c = super.c + i;
 						
 						// Ignore this successor state if the new
 						// cannibal population exceeds the max or
 						// there are a negative number of cannibals.
-						if( c > _totalC || c < 0 ) {
+						if (c > totalC || c < 0) {
 							continue;
 						}
+						
 						// Calculate new missionary population.
-						m = _m + j;
+						m = super.m + j;
 						
 						// Ignore this successor state if the new
 						// missionary population exceeds the max or
 						// there are a negative number of missionaries.
-						if( m > _totalM || m < 0 ) {
+						if (m > totalM || m < 0) {
 							continue;
 						}
 						
@@ -150,33 +151,33 @@ public class MandCTrips extends AbstractMandC {
 						// state has at least 1 cannibal, check whether
 						// the cannibal(s) might get killed. If so, ignore
 						// this successor state.
-						if( c > 0 ) {
-							if( c < m ) {
+						if (c > 0) {
+							if (c < m) {
 								continue;
 							}
 						}
 						
 						// Also, make sure things are safe on the other bank.
 						// If not, ignore this successor state.
-						int otherC = _totalC - c;
-						int otherM = _totalM - m;
-						if( otherC > 0 ) { 
-							if( otherC < otherM ) {
+						int otherC = totalC - c;
+						int otherM = totalM - m;
+						if (otherC > 0) { 
+							if (otherC < otherM) {
 								continue;
 							}
 						}
 						
 						// We've found a good successor state! Add it to the
 						// children list and set a few variables.
-						child = new MandCTrips( c, m, WEST, this );
-						child.setTotalC( _totalC );
-						child.setTotalM( _totalM );
-						child.setBoatCapacity( _capacity );
+						child = new MandCTrips(c, m, WEST, this);
+						child.setTotalC(totalC);
+						child.setTotalM(totalM);
+						child.setBoatCapacity(capacity);
 						
 					}
 					
 					// Add child to child list.
-					_children.add( child );
+					children.add(child);
 					
 				}
 				
@@ -185,7 +186,7 @@ public class MandCTrips extends AbstractMandC {
 		}
 		
 		// Return an iterator over this list of children.
-		return _children.iterator();
+		return children.iterator();
 		
 	}
 
@@ -198,13 +199,13 @@ public class MandCTrips extends AbstractMandC {
 	 * @return <code>true</code> if this object is the same as the obj
      * argument; <code>false</code> otherwise.
 	 */
-	public boolean equals( Object o ) {
+	public boolean equals(Object o) {
 		
-		boolean mMatch = ( _m == ((MandCTrips)o).getM() );
-		boolean cMatch = ( _c == ((MandCTrips)o).getC() );
-		boolean bMatch = ( _bank == ((MandCTrips)o).getBank() );
+		boolean mMatch = (m == ((MandCTrips)o).getM());
+		boolean cMatch = (c == ((MandCTrips)o).getC());
+		boolean bMatch = (bank == ((MandCTrips)o).getBank());
 		
-		return ( mMatch && cMatch && bMatch );
+		return (mMatch && cMatch && bMatch);
 		
 	}
 
@@ -221,22 +222,20 @@ public class MandCTrips extends AbstractMandC {
 	 */
 	public double heuristic() throws NullPointerException {
 		
-		if( _theGoal == null ) {
-			throw new NullPointerException( "MandCTrips.heuristic error: " +
-					"The goal state has not been set." );
+		if (theGoal == null) {
+			throw new NullPointerException("MandCTrips.heuristic error: The goal state has not been set.");
 		}
 		
 		// Estimates the number of trips required to move everyone
 		// from one side of the river to the other.
-		double h = ( _c + _m ) / _capacity;
+		double h = (c + m) / capacity;
 
 		// *DEBUG*
-		if( Global.getDebug() ) {
-			System.out.println( "*DEBUG* [" + _string + "]  _g = " +
-					_g + ", h = " + h + ", Heuristic() = " + ( _g + h ) );
+		if (Global.getDebug()) {
+			System.out.println("*DEBUG* [" + string + "]  g = " + g + ", h = " + h + ", Heuristic() = " + (g + h));
 		}
 		
-		return _g + h;
+		return g + h;
 		
 	}
 
@@ -248,25 +247,25 @@ public class MandCTrips extends AbstractMandC {
 	 */
 	public String toString() {
 		
-		if( _parent == null ) {
-			return ( "" );
+		if (parent == null) {
+			return ("");
 		}
 		
-		int c = ((MandCTrips)_parent).getC();
-		int m = ((MandCTrips)_parent).getM();
-		int bank = ((MandCTrips)_parent).getBank();
+		int c = ((MandCTrips)parent).getC();
+		int m = ((MandCTrips)parent).getM();
+		int bank = ((MandCTrips)parent).getBank();
 		
 		String initState = "Initial State = { \n" +
 				"\tWEST BANK : " + c + " Cannibals and " + m + " Missionaries\n" +
-				"\tEAST BANK : " + ( _totalC - c ) + " Cannibals and " + ( _totalM - m ) + " Missionaries\n" +
-				"\tBOAT is on " + ( bank == WEST ? "WEST" : "EAST" ) + " BANK\n";
+				"\tEAST BANK : " + (totalC - c) + " Cannibals and " + (totalM - m) + " Missionaries\n" +
+				"\tBOAT is on " + (bank == WEST ? "WEST" : "EAST") + " BANK\n";
 		
 		String goalState = "Goal State = { \n" +
-		"\tWEST BANK : " + _c + " Cannibals and " + _m + " Missionaries\n" +
-		"\tEAST BANK : " + ( _totalC - _c ) + " Cannibals and " + ( _totalM - _m ) + " Missionaries\n" +
-		"\tBOAT is on " + ( _bank == WEST ? "WEST" : "EAST" ) + " BANK\n";
+		"\tWEST BANK : " + super.c + " Cannibals and " + super.m + " Missionaries\n" +
+		"\tEAST BANK : " + (totalC - super.c) + " Cannibals and " + (totalM - super.m) + " Missionaries\n" +
+		"\tBOAT is on " + (super.bank == WEST ? "WEST" : "EAST") + " BANK\n";
 		
-		return ( initState + goalState );
+		return (initState + goalState);
 		
 	}
 

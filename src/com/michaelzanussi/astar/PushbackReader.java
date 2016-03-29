@@ -31,13 +31,12 @@ public class PushbackReader extends AbstractFileReader {
 	 * @param file the file to open or <code>null</code> for standard input.
 	 * @return <code>true</code> if successful.
 	 */
-	public boolean open( File file ) {
+	public boolean open(File file) {
 		
-		if( super.open( file ) ) {
-			pbuffer = new java.io.PushbackReader( buffer );
-			return ( pbuffer == null ? false : true );
-		}
-		else {
+		if (super.open(file)) {
+			pbuffer = new java.io.PushbackReader(buffer);
+			return (pbuffer == null ? false : true);
+		} else {
 			// super.open() failed.
 			return false;
 		}
@@ -56,8 +55,8 @@ public class PushbackReader extends AbstractFileReader {
 		
 		try {
 			c = pbuffer.read();
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 
 		return c;
@@ -69,12 +68,12 @@ public class PushbackReader extends AbstractFileReader {
 	 * 
 	 * @param c the character to push back.
 	 */
-	public void unread( int c ) {
+	public void unread(int c) {
 		
 		try {
-			pbuffer.unread( c );
-		} catch( IOException e ) {
-			System.err.println( "ERROR: " + e.getMessage() );
+			pbuffer.unread(c);
+		} catch (IOException e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 		
 	}

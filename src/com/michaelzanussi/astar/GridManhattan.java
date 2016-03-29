@@ -20,9 +20,9 @@ public class GridManhattan extends AbstractGrid implements Monotonic {
 	 * @param distance the distance from this location to its parent.
 	 * @param parent the parent location of this location.
 	 */
-	public GridManhattan( int x, int y, double distance, PuzState parent ) {
+	public GridManhattan(int x, int y, double distance, PuzState parent) {
 		
-		super( x, y, distance, parent );
+		super(x, y, distance, parent);
 		
 	}
 
@@ -36,31 +36,31 @@ public class GridManhattan extends AbstractGrid implements Monotonic {
 	 *
 	 * @return Iterator over the children state of this node.
 	 */
-	public Iterator children() {
+	public Iterator<Object> children() {
 		
-		_children = new LinkedList();
+		children = new LinkedList<Object>();
 		
-		if ( _x != 0 ) {
+		if (xcoord != 0) {
 			// Add the cell to the west.
-			_children.add( _childLocation( _x - 1, _y, 1.0 ) );
+			children.add(childLocation(xcoord - 1, ycoord, 1.0));
 		}
 		
-		if ( _y != 0 ) {
+		if (ycoord != 0) {
 			// Add the cell to the north.
-			_children.add( _childLocation( _x, _y - 1, 1.0 ) );
+			children.add(childLocation(xcoord, ycoord - 1, 1.0));
 		}
 		
-		if ( _x != _totalX - 1) {
+		if (xcoord != totalX - 1) {
 			// Add the cell to the east.
-			_children.add( _childLocation( _x + 1, _y, 1.0 ) );
+			children.add(childLocation(xcoord + 1, ycoord, 1.0));
 		}
 		
-		if ( _y != _totalY - 1 ) {
+		if (ycoord != totalY - 1) {
 			// Add the cell to the south.
-			_children.add( _childLocation( _x, _y + 1, 1.0 ) );
+			children.add(childLocation(xcoord, ycoord + 1, 1.0));
 		}
 
-		return _children.iterator();
+		return children.iterator();
 		
 	}
 
@@ -73,9 +73,9 @@ public class GridManhattan extends AbstractGrid implements Monotonic {
 	 * @return <code>true</code> if these states are equal, otherwise
 	 * <code>false</code>
 	 */
-	public boolean equals( Object o ) {
+	public boolean equals(Object o) {
 	
-		return ( _string.compareTo( ((GridManhattan)o).getLabel() ) == 0 );
+		return (string.compareTo(((GridManhattan)o).getLabel()) == 0);
 		
 	}
 
@@ -92,21 +92,19 @@ public class GridManhattan extends AbstractGrid implements Monotonic {
 	 */
 	public double heuristic() throws NullPointerException {
 
-		if( _theGoal == null ) {
-			throw new NullPointerException( "GridManhattan.heuristic error: " +
-					"Goal state has not been set." );
+		if( theGoal == null ) {
+			throw new NullPointerException("GridManhattan.heuristic error: Goal state has not been set.");
 		}
 		
 		// Manhattan distance. 
-		double h = getDistance() * ( Math.abs( (double)getX() - ((GridManhattan)_theGoal).getX() ) + Math.abs( (double)getY() - ((GridManhattan)_theGoal).getY() ) );
+		double h = getDistance() * (Math.abs((double)getX() - ((GridManhattan)theGoal).getX()) + Math.abs((double)getY() - ((GridManhattan)theGoal).getY()));
 		
 		// *DEBUG*
-		if( Global.getDebug() ) {
-			System.out.println( "*DEBUG* [" + _string + "]  _g = " +
-					_g + ", h = " + h + ", Heuristic() = " + ( _g + h ) );
+		if (Global.getDebug()) {
+			System.out.println("*DEBUG* [" + string + "]  g = " + g + ", h = " + h + ", Heuristic() = " + (g + h));
 		}
 		
-		return _g + h;
+		return g + h;
 
 	}
 
@@ -120,16 +118,16 @@ public class GridManhattan extends AbstractGrid implements Monotonic {
 	 * @param cost the cost to get to this location.
 	 * @return the new child.
 	 */
-	protected GridManhattan _childLocation( int x, int y, double cost ) {
+	protected GridManhattan childLocation(int x, int y, double cost) {
 
 		// Account for any obstacles.
-		double dcost = ( _obstacles[x][y] > 0 ? _obstacles[x][y] : cost );
+		double dcost = (obstacles[x][y] > 0 ? obstacles[x][y] : cost);
 
 		// Create the new child.
-		GridManhattan child = new GridManhattan( x, y, dcost, this );
-		child.setTotalX( _totalX );
-		child.setTotalY( _totalY );
-		child.setObstacles( _obstacles );
+		GridManhattan child = new GridManhattan(x, y, dcost, this);
+		child.setTotalX(totalX);
+		child.setTotalY(totalY);
+		child.setObstacles(obstacles);
 		
 		return child;
 		
