@@ -23,15 +23,14 @@ public class ParseInteger {
 	 * @return a non-negative integer.
 	 * @throws ParsingException If integer is not <code>&gt;= 0</code>.
 	 */
-	public static int parseNonNegInteger( Lexer lexer ) throws ParsingException {
+	public static int parseNonNegInteger(Lexer lexer) throws ParsingException {
 		
 		// Parse the integer.
-		int i = _parseInteger( lexer.nextToken() );
+		int i = parseInteger(lexer.nextToken());
 		
 		// Check to see if this is a positive integer.
-		if( i < 0 ) {
-			throw new ParsingException( "ParseInteger.parseNonNegInteger error: " +
-					"Non-negative integer expected but received: " + i );
+		if (i < 0) {
+			throw new ParsingException("ParseInteger.parseNonNegInteger error: Non-negative integer expected but received: " + i);
 		}
 		
 		return i;
@@ -45,15 +44,14 @@ public class ParseInteger {
 	 * @return a positive integer.
 	 * @throws ParsingException If integer is not <code>&gt; 0</code>.
 	 */
-	public static int parsePosInteger( Lexer lexer ) throws ParsingException {
+	public static int parsePosInteger(Lexer lexer) throws ParsingException {
 		
 		// Parse the integer.
-		int i = _parseInteger( lexer.nextToken() );
+		int i = parseInteger(lexer.nextToken());
 		
 		// Check to see if this is a positive integer.
-		if( i <= 0 ) {
-			throw new ParsingException( "ParseInteger.parsePosInteger error: " + 
-					"Positive integer expected but received: " + i );
+		if (i <= 0) {
+			throw new ParsingException("ParseInteger.parsePosInteger error: Positive integer expected but received: " + i);
 		}
 		
 		return i;
@@ -67,16 +65,14 @@ public class ParseInteger {
 	 * @return an integer.
 	 * @throws ParsingException If the token is not an integer.
 	 */
-	private static int _parseInteger( Token token ) throws ParsingException {
+	private static int parseInteger(Token token) throws ParsingException {
 		
 		int i = 0;
 		
 		try {
-			i = Integer.parseInt( token.getToken() );
-		}
-		catch( NumberFormatException e ) {
-			throw new ParsingException( "ParseInteger._parseInteger error: Integer expected " + 
-					"but received: " + token.getToken() );
+			i = Integer.parseInt(token.getToken());
+		} catch (NumberFormatException e) {
+			throw new ParsingException("ParseInteger.parseInteger error: Integer expected but received: " + token.getToken());
 		}
 		
 		return i;

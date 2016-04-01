@@ -105,7 +105,13 @@ public final class HashingHeap implements PriorityQueue {
 		
 		// Add the key to the hash table, using the index into the 
 		// heap as its value. This operation occurs amortized in O(1) time.
-		hash.put(key, new Integer(i));
+		Object old = hash.put(key, new Integer(i));
+		
+		// TODO: Turns out HashingHeap is imperfect dealing with duplicate keys.
+		// Not an issue with most puzzles, but should be looked into and fixed.
+		// Probably with a new data structure altogether.
+		assert(old == null);
+		//if (old == null) System.out.println("MAPPING EXISTS FOR KEY: " + old);
 
 		// Put this new key into its correct position in the heap. This
 		// is a min-heap, so the shortest distance is located at the root.

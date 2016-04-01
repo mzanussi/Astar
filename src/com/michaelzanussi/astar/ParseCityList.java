@@ -1,6 +1,7 @@
 package com.michaelzanussi.astar;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>ParseCityList</code> class parses the BNF rule <code>CITYLIST</code>.
@@ -20,47 +21,44 @@ public class ParseCityList {
 	 * Parse the input file.
 	 * 
 	 * @param lexer the lexer.
-	 * @return a vector containing the city list.
+	 * @return a city list.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static Vector parse( Lexer lexer ) throws ParsingException {
+	public static List<String> parse(Lexer lexer) throws ParsingException {
 
 		// The city table.	
-		Vector table = new Vector();
+		List<String> table = new ArrayList<String>();
 		
 		// Check for an open parenthesis.
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "ParseCityList.parse error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("ParseCityList.parse error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 		
-		// Check for an end paranethesis (empty list) 
+		// Check for an end parenthesis (empty list) 
 		token = lexer.nextToken();
-		if( token.getToken().equals( ")" ) ) {
+		if (token.getToken().equals(")")) {
 			return null;
-		}
-		else {
+		} else {
 			// Push back the token.
-			lexer.pushBack( token );
+			lexer.pushBack(token);
 		}
 		
-		while( true ) {
+		while (true) {
 			
 			// Get the city and add to list.
-			String city = ParseCityName.parse( lexer );
-			table.add( city );
+			String city = ParseCityName.parse(lexer);
+			table.add(city);
 
 			// Check for more cities to add.
 			token = lexer.nextToken();
-			if( token.getToken().equals( "," ) ) {
+			if (token.getToken().equals(",")) {
 				continue;
 			}
 
 			// Check for an end parenthesis.
-			if( !token.getToken().equals( ")" ) ) {
-				throw new ParsingException( "ParseCityList.parse error: " +
-						"Expected ')' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals(")")) {
+				throw new ParsingException("ParseCityList.parse error: Expected ')' but received '" + token.getToken() + "'.");
 			}
 			
 			// Return the city list.

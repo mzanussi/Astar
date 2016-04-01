@@ -12,28 +12,27 @@ public abstract class AbstractToken implements Token {
 	/**
 	 * The token.
 	 */
-	protected String _token;
+	protected String token;
 	
 	/**
 	 * The token type.
 	 */
-	protected int _type;
+	protected int type;
 	
 	/**
 	 * Standard constructor.
 	 * 
 	 * @param token the contents of the token.
 	 */
-	public AbstractToken( String token, int type ) throws NullPointerException {
+	public AbstractToken(String token, int type) {
 		
 		// Do not allow null tokens.
-		if( token == null ) {
-			throw new NullPointerException( "AbstractToken.AbstractToken error: " +
-					"Null tokens are not allowed." );
+		if (token == null) {
+			throw new NullPointerException("AbstractToken.AbstractToken error: Null tokens are not allowed.");
 		}
 		
-		_token = token;
-		_type = type;
+		this.token = token;
+		this.type = type;
 		
 	}
 	
@@ -44,7 +43,7 @@ public abstract class AbstractToken implements Token {
 	 */
 	public String getToken() { 
 		
-		return _token; 
+		return token; 
 	
 	}
 	
@@ -55,7 +54,7 @@ public abstract class AbstractToken implements Token {
 	 */
 	public int getTokenType() { 
 		
-		return _type; 
+		return type; 
 	
 	}
 	

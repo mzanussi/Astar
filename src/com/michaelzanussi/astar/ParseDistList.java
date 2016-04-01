@@ -1,6 +1,7 @@
 package com.michaelzanussi.astar;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>ParseDistList</code> class parses the BNF rule <code>DISTLIST</code>
@@ -24,70 +25,65 @@ public class ParseDistList {
 	 * @return a vector containing city/distance list.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static Vector parse( Lexer lexer ) throws ParsingException {
+	public static List<String[]> parse(Lexer lexer) throws ParsingException {
 
 		// The distance table.	
-		Vector table = new Vector();
+		List<String[]> table = new ArrayList<String[]>();
 		
 		// Check for an open parenthesis.
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "ParseDistList.parse error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("ParseDistList.parse error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 		
-		// Check for an end paranethesis (empty list) 
+		// Check for an end parenthesis (empty list) 
 		token = lexer.nextToken();
-		if( token.getToken().equals( ")" ) ) {
+		if (token.getToken().equals(")")) {
 			return null;
-		}
-		else {
+		} else {
 			// Push back the token.
-			lexer.pushBack( token );
+			lexer.pushBack(token);
 		}
 		
-		while( true ) {
+		while (true) {
 			
 			// Get the start city.
-			String start = ParseCityName.parse( lexer );
+			String start = ParseCityName.parse(lexer);
 			
 			// Check for "arrow".
 			token = lexer.nextToken();
-			if( !token.getToken().equals( "->") ) {
-				throw new ParsingException( "ParseDistList.parse error: " +
-						"Expected '->' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals("->")) {
+				throw new ParsingException( "ParseDistList.parse error: Expected '->' but received '" + token.getToken() + "'.");
 			}
 			
 			// Get the end city.
-			String end = ParseCityName.parse( lexer );
+			String end = ParseCityName.parse(lexer);
 			
 			// Check for "=".
 			token = lexer.nextToken();
-			if( !token.getToken().equals( "=") ) {
-				throw new ParsingException( "ParseDistList.parse error: " +
-						"Expected '=' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals("=")) {
+				throw new ParsingException("ParseDistList.parse error: Expected '=' but received '" + token.getToken() + "'.");
 			}
 			
 			// Get the distance.
-			Integer dist = new Integer( ParseInteger.parseNonNegInteger( lexer ) );
+			Integer dist = new Integer(ParseInteger.parseNonNegInteger(lexer));
 
 			// Store the city/distance data into an array and add it to the table. 
 			String[] triple = new String[3];
 			triple[0] = start;
 			triple[1] = end;
 			triple[2] = dist.toString();
-			table.add( triple );
+			table.add(triple);
 			
 			// Check for more city/distance pairs.
 			token = lexer.nextToken();
-			if( token.getToken().equals( "," ) ) {
+			if (token.getToken().equals(",")) {
 				continue;
 			}
 			
 			// Check for ")".
-			if( !token.getToken().equals( ")" ) ) {
-				throw new ParsingException( "ParseDistList.parse error: " +
-						"Expected ')' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals(")")) {
+				throw new ParsingException("ParseDistList.parse error: Expected ')' but received '" + token.getToken() + "'.");
 			}
 			
 			// Return the distance list.

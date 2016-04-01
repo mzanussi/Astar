@@ -23,59 +23,40 @@ public class ParseFile {
 	 * @return the fully-qualified filename.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static String parse( Lexer lexer ) throws ParsingException {
+	public static String parse(Lexer lexer) throws ParsingException {
 
 		// Get the option
 		Token token = lexer.nextToken();
 		String option = token.getToken();
 		
 		// Verify this is a valid SEARCH-CTRL option.
-		if( !option.equals( "OutFile" ) &&
-				!option.equals( "LogFile" ) &&
-				!option.equals( "ErrFile" ) ) {
-			
-			throw new ParsingException( "ParseFile.parse error: Invalid OUTFILE, " +
-					"LOGFILE, or ERRFILE option: " + token.getToken() );
-			
+		if (!option.equals("OutFile") && !option.equals("LogFile") && !option.equals("ErrFile")) {
+			throw new ParsingException("ParseFile.parse error: Invalid OUTFILE, LOGFILE, or ERRFILE option: " + token.getToken());
 		}
 		
 		// Next token should be the "=" symbol.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			
-			throw new ParsingException( "ParseFile.parse error: Expected '=' but received '" + 
-					token.getToken() + "'." );
-			
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("ParseFile.parse error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 		
 		// Next token should be the "\"" symbol.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "\"" ) ) {
-			
-			throw new ParsingException( "ParseFile.parse error: Expected '\"' but received '" + 
-					token.getToken() + "'." );
-			
+		if (!token.getToken().equals("\"")) {
+			throw new ParsingException("ParseFile.parse error: Expected '\"' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get the value, verify it, then store it off.
 		token = lexer.nextToken();
-		if( token.getTokenType() != PuzzleToken.TT_FILE &&
-				token.getTokenType() != PuzzleToken.TT_ALPHA ) {
-			
-			throw new ParsingException( "ParseFile.parse: Invalid file name - " +
-					token.getToken() + ". Token type was: " + 
-					token.getTokenType() + ".");
-			
+		if (token.getTokenType() != PuzzleToken.TT_FILE && token.getTokenType() != PuzzleToken.TT_ALPHA) {
+			throw new ParsingException("ParseFile.parse: Invalid file name - " + token.getToken() + ". Token type was: " + token.getTokenType() + ".");
 		}
 		String strToken = token.getToken();
 		
 		// Next token should be the "\"" symbol.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "\"" ) ) {
-			
-			throw new ParsingException( "ParseFile.parse error: Expected '\"' but received '" + 
-					token.getToken() + "'." );
-			
+		if (!token.getToken().equals("\"")) {
+			throw new ParsingException("ParseFile.parse error: Expected '\"' but received '" + token.getToken() + "'.");
 		}
 		
 		// Return the filename.

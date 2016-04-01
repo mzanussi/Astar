@@ -21,27 +21,20 @@ public class ParseCityName {
 	 * @return the city name.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static String parse( Lexer lexer ) throws ParsingException {
+	public static String parse(Lexer lexer) throws ParsingException {
 		
 		// Get the next token, which should be a city name.
 		Token token = lexer.nextToken();
 
 		// Check to see if the city name is alphabetic.
-		if( token.getTokenType() != PuzzleToken.TT_ALPHA ) {
-			
-			throw new ParsingException( "ParseCityName.parse: Invalid city name - " +
-					token.getToken() + ". Token type was: " + 
-					token.getTokenType() + ". City name must be alphabetic only.");
-			
+		if (token.getTokenType() != PuzzleToken.TT_ALPHA) {
+			throw new ParsingException("ParseCityName.parse: Invalid city name - " + token.getToken() + ". Token type was: " + token.getTokenType() + ". City name must be alphabetic only.");
 		}
 
 		// Verify the first letter is capitalized.
-		char ch = token.getToken().charAt( 0 );
-		if( !( ch >= 'A' && ch <= 'Z' ) ) {
-
-			throw new ParsingException( "ParseCityName.parse: Invalid city name - " +
-					token.getToken() + ". First letter must be uppercase. " ); 
-			
+		char ch = token.getToken().charAt(0);
+		if (!(ch >= 'A' && ch <= 'Z')) {
+			throw new ParsingException("ParseCityName.parse: Invalid city name - " + token.getToken() + ". First letter must be uppercase."); 
 		}
 		
 		// Return the city name.

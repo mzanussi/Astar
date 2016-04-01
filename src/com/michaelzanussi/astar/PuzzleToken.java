@@ -45,9 +45,9 @@ public class PuzzleToken extends AbstractToken {
 	 * @param token the token.
 	 * @param type the token type.
 	 */
-	public PuzzleToken( String token, int type ) {
+	public PuzzleToken(String token, int type) {
 		
-		super( token, type );
+		super(token, type);
 		
 	}
 	

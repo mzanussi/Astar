@@ -26,107 +26,93 @@ public class ParseMCState {
 	 * @return the city name.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static int[][] parse( Lexer lexer ) throws ParsingException {
+	public static int[][] parse(Lexer lexer) throws ParsingException {
 		
 		// Get "{" token.
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "{" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected '{' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("{")) {
+			throw new ParsingException("ParseMCState.parse error: Expected '{' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get "WEST" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "WEST" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'WEST' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("WEST")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'WEST' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get "BANK" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "BANK" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'BANK' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("BANK")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'BANK' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get ":" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( ":" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected ':' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals(":")) {
+			throw new ParsingException("ParseMCState.parse error: Expected ':' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get the BANKSPEC
-		int[] westBank = ParseBankSpec.parse( lexer );
+		int[] westBank = ParseBankSpec.parse(lexer);
 
 		// Get "EAST" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "EAST" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'WEST' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("EAST")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'WEST' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get "BANK" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "BANK" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'BANK' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("BANK")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'BANK' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get ":" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( ":" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected ':' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals(":")) {
+			throw new ParsingException("ParseMCState.parse error: Expected ':' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get the BANKSPEC
-		int[] eastBank = ParseBankSpec.parse( lexer );
+		int[] eastBank = ParseBankSpec.parse(lexer);
 
 		// Get "BOAT" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "BOAT" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'BOAT' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("BOAT")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'BOAT' but received '" + token.getToken() + "'.");
 		}
 
 		// Get "is" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "is" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'is' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("is")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'is' but received '" + token.getToken() + "'.");
 		}
 
 		// Get "on" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "on" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'on' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("on")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'on' but received '" + token.getToken() + "'.");
 		}
 
 		// Get "EAST" or "WEST" token.
 		int location = -1;
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "EAST" ) && !token.getToken().equals( "WEST" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'EAST' or 'WEST' but received '" + token.getToken() + "'." );
-		}
-		else {
-			location = ( token.getToken().equals( "WEST" ) ? 1 : 0 );
+		if (!token.getToken().equals("EAST") && !token.getToken().equals("WEST")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'EAST' or 'WEST' but received '" + token.getToken() + "'.");
+		} else {
+			location = (token.getToken().equals("WEST") ? 1 : 0);
 		}
 
 		// Get "BANK" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "BANK" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected 'BANK' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("BANK")) {
+			throw new ParsingException("ParseMCState.parse error: Expected 'BANK' but received '" + token.getToken() + "'.");
 		}
 
 		// Get "}" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "}" ) ) {
-			throw new ParsingException( "ParseMCState.parse error: " +
-					"Expected '}' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("}")) {
+			throw new ParsingException("ParseMCState.parse error: Expected '}' but received '" + token.getToken() + "'.");
 		}
 		
 		// Store off the int pair.

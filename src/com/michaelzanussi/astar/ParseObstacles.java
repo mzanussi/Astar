@@ -22,78 +22,71 @@ public class ParseObstacles {
 	 * @return a vector containing city/distance list.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static int[][] parse( Lexer lexer, int size ) throws ParsingException {
+	public static int[][] parse(Lexer lexer, int size) throws ParsingException {
 
 		// The obstacles table.	
 		int[][] table = new int[size][size];
 		
 		// Check for an open parenthesis.
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "ParseObstacles.parse error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("ParseObstacles.parse error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 		
-		// Check for an end paranethesis (empty list) 
+		// Check for an end parenthesis (empty list) 
 		token = lexer.nextToken();
-		if( token.getToken().equals( ")" ) ) {
+		if (token.getToken().equals(")")) {
 			return table;
-		}
-		else {
+		} else {
 			// Push back the token.
-			lexer.pushBack( token );
+			lexer.pushBack(token);
 		}
 		
 		
-		while( true ) {
+		while (true) {
 			
 			// Get the start city.
-			int x = ParseInteger.parseNonNegInteger( lexer );
+			int x = ParseInteger.parseNonNegInteger(lexer);
 			
 			// Verify coord is in range.
-			if( x < 0 || x > size ) {				
-				throw new ParsingException( "ParseObstacles.parse error: " +
-						"X value out of range: " + x );
+			if (x < 0 || x > size) {				
+				throw new ParsingException("ParseObstacles.parse error: X value out of range: " + x);
 			}
 			
 			// Check for ":".
 			token = lexer.nextToken();
-			if( !token.getToken().equals( ":") ) {
-				throw new ParsingException( "ParseObstacles.parse error: " +
-						"Expected ':' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals(":")) {
+				throw new ParsingException("ParseObstacles.parse error: Expected ':' but received '" + token.getToken() + "'.");
 			}
 			
 			// Get the end city.
-			int y = ParseInteger.parseNonNegInteger( lexer );
+			int y = ParseInteger.parseNonNegInteger(lexer);
 			
 			// Verify coord is in range.
-			if( y < 0 || y > size ) {				
-				throw new ParsingException( "ParseObstacles.parse error: " +
-						"Y value out of range: " + y );
+			if (y < 0 || y > size) {				
+				throw new ParsingException("ParseObstacles.parse error: Y value out of range: " + y);
 			}
 			
 			// Check for "=".
 			token = lexer.nextToken();
-			if( !token.getToken().equals( "=") ) {
-				throw new ParsingException( "ParseObstacles.parse error: " +
-						"Expected '=' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals("=")) {
+				throw new ParsingException("ParseObstacles.parse error: Expected '=' but received '" + token.getToken() + "'.");
 			}
 			
 			// Get the cost.
-			int cost = ParseInteger.parsePosInteger( lexer );
+			int cost = ParseInteger.parsePosInteger(lexer);
 
 			table[x][y] = cost;
 			
 			// Check for more pairs.
 			token = lexer.nextToken();
-			if( token.getToken().equals( "," ) ) {
+			if (token.getToken().equals(",")) {
 				continue;
 			}
 			
 			// Check for ")".
-			if( !token.getToken().equals( ")" ) ) {
-				throw new ParsingException( "ParseObstacles.parse error: " +
-						"Expected ')' but received '" + token.getToken() + "'." );
+			if (!token.getToken().equals(")")) {
+				throw new ParsingException( "ParseObstacles.parse error: Expected ')' but received '" + token.getToken() + "'.");
 			}
 			
 			// Return the distance list.

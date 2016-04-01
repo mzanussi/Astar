@@ -21,33 +21,30 @@ public class ParseBankSpec {
 	 * @return the city name.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static int[] parse( Lexer lexer ) throws ParsingException {
+	public static int[] parse(Lexer lexer) throws ParsingException {
 		
 		// Get the next token, which should be the number of cannibals.
-		int c = ParseInteger.parseNonNegInteger( lexer );
+		int c = ParseInteger.parseNonNegInteger(lexer);
 
 		// Get "Cannibals" token.
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "Cannibals" ) ) {
-			throw new ParsingException( "ParseBankSpec.parse error: " +
-					"Expected 'Cannibals' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("Cannibals")) {
+			throw new ParsingException("ParseBankSpec.parse error: Expected 'Cannibals' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get "and" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "and" ) ) {
-			throw new ParsingException( "ParseBankSpec.parse error: " +
-					"Expected 'and' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("and")) {
+			throw new ParsingException("ParseBankSpec.parse error: Expected 'and' but received '" + token.getToken() + "'.");
 		}
 		
 		// Get the next token, which should be the number of missionaries.
-		int m = ParseInteger.parseNonNegInteger( lexer );
+		int m = ParseInteger.parseNonNegInteger(lexer);
 
 		// Get "Missionaries" token.
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "Missionaries" ) ) {
-			throw new ParsingException( "ParseBankSpec.parse error: " +
-					"Expected 'Missionaries' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("Missionaries")) {
+			throw new ParsingException("ParseBankSpec.parse error: Expected 'Missionaries' but received '" + token.getToken() + "'.");
 		}
 
 		// Store off the int pair.

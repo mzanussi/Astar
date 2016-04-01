@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * The <code>PuzzleMuncher</code> universal puzzle engine driver. <p>
@@ -26,30 +25,29 @@ import java.util.Vector;
 public class PuzzleMuncher {
 
 	// The lexer.
-	private Lexer _lexer;
+	private Lexer lexer;
 	
 	// Current heuristic name.
-	private String _hName;
+	private String hName;
 	
 	// The output, log, and error files.
-	private String _outFile;
-	private String _logFile;
-	private String _errFile;
+	private String outFile;
+	private String logFile;
+	private String errFile;
 
 	// The RESULTS options.
-	private boolean _solnPathLen;
-	private boolean _moveSeq;
+	private boolean solnPathLen;
+	private boolean moveSeq;
 	
 	// The STATS options.
-	private boolean _nodesOpened;
-	private boolean _openListMaxLen;
-	private boolean _nodesClosed;
-	private boolean _numReopened;
+	private boolean nodesOpened;
+	private boolean nodesClosed;
+	private boolean numReopened;
 	
 	// The individual puzzle data.
-	private _GridPuzzleData _gridData;
-	private _SPPuzzleData _spData;
-	private _MCPuzzleData _mcData;
+	private GridPuzzleData gridData;
+	private SPPuzzleData spData;
+	private MCPuzzleData mcData;
 	
 	/**
 	 * Standard constructor.
@@ -57,24 +55,23 @@ public class PuzzleMuncher {
 	 * @param lexer the lexer.
 	 * @throws NullPointerException If no lexer was specified.
 	 */
-	public PuzzleMuncher( Lexer lexer ) throws NullPointerException {
+	public PuzzleMuncher(Lexer lexer) {
 
 		// Was a lexer specified?
-		if( lexer == null ) {
-			throw new NullPointerException( "PuzzleMuncher.PuzzleMuncher error: " +
-					"The lexer cannot be null." );
+		if (lexer == null) {
+			throw new NullPointerException("PuzzleMuncher.PuzzleMuncher error: The lexer cannot be null.");
 		}
 		
-		_lexer = lexer;
-		_hName = null;
-		_outFile = null;
-		_logFile = null;
-		_errFile = null;
-		_spData = null;
-		_mcData = null;
-		_gridData = null;
+		this.lexer = lexer;
+		hName = null;
+		outFile = null;
+		logFile = null;
+		errFile = null;
+		spData = null;
+		mcData = null;
+		gridData = null;
 		
-		_reset();
+		reset();
 		
 	}
 
@@ -83,12 +80,12 @@ public class PuzzleMuncher {
 	 * 
 	 * @throws ParsingException If any unknown grammar is encountered.
 	 */
-	public void parse() throws ParsingException, UnsupportedOperationException {
+	public void parse() throws ParsingException {
 		
-		while( _lexer.hasMoreTokens() ) {
+		while (lexer.hasMoreTokens()) {
 			
 			// Get the first token.
-			Token token = _lexer.nextToken();
+			Token token = lexer.nextToken();
 			String strToken = token.getToken();
 
 			// Empty file?
@@ -104,38 +101,38 @@ public class PuzzleMuncher {
 			if( strToken.equals( "Puzzle" ) ) {
 				
 				// Get the puzzle family. 
-				token = _lexer.nextToken();
+				token = lexer.nextToken();
 				strToken = token.getToken();
 				
 				if( strToken.equals( "MissionariesAndCannibals" ) ) {
 					// Push the current token back onto the stack.
-					_lexer.pushBack( token );
+					lexer.pushBack(token);
 					// Parse the MissionariesAndCannibals puzzle portion from the input
 					// file and store the resultant data off.
-					_mcData = _parseMCPuzzle( _lexer );
+					mcData = parseMCPuzzle(lexer);
 				}
 				else if( strToken.equals( "ShortestPaths" ) ) {
 					// Push the current token back onto the stack.
-					_lexer.pushBack( token );
+					lexer.pushBack(token);
 					// Parse the ShortestPaths puzzle portion from the input
 					// file and store the resultant data off.
-					_spData = _parseSPPuzzle( _lexer );
+					spData = parseSPPuzzle(lexer);
 					// Setup the city table.
-					_spData.fillTable();
+					spData.fillTable();
 				}
 				else if( strToken.equals( "Grid" ) ) {
 					// Push the current token back onto the stack.
-					_lexer.pushBack( token );
+					lexer.pushBack( token );
 					// Parse the Grid puzzle portion from the input
 					// file and store the resultant data off.
-					_gridData = _parseGridPuzzle( _lexer );
+					gridData = parseGridPuzzle(lexer);
 				}
 				else if( strToken.equals( "NToTheKPuzzle" ) ) {
 					// Push the current token back onto the stack. 
-					_lexer.pushBack( token );
+					lexer.pushBack(token);
 					// Parse the NToTheKPuzzle puzzle portion from the input
 					// file and store the resultant data off.
-					_parseN2KPuzzle( _lexer );
+					parseN2KPuzzle(lexer);
 				}
 			}
 			
@@ -146,127 +143,126 @@ public class PuzzleMuncher {
 			else {
 				
 				// Handle Reset
-				if( strToken.equals( "Reset" ) ) {
-					_reset();
+				if (strToken.equals("Reset")) {
+					reset();
 				}
 				
 				// Handle Run
 				else if( strToken.equals( "Run" ) ) {
 					
 					// Output the heuristic name.
-					Global.output( "\nHeuristic: " + _hName );
+					Global.output("\nHeuristic: " + hName);
 					
 					// Execute puzzle: Missionaries and Cannibals
 					
-					if( _hName.equals( "MandCTrips" ) ) {
+					if (hName.equals("MandCTrips")) {
 						
 						// Set the start state and goal state.
-						MandCTrips start = (MandCTrips)_mcData.getStart();
-						MandCTrips goal = (MandCTrips)_mcData.getGoal();
+						MandCTrips start = (MandCTrips)mcData.getStart();
+						MandCTrips goal = (MandCTrips)mcData.getGoal();
 						
 						// Set some initial start state values.
-						start.setGoal( goal );
-						start.setTotalC( _mcData.getTotalC() );
-						start.setTotalM( _mcData.getTotalM() );
+						start.setGoal(goal);
+						start.setTotalC(mcData.getTotalC());
+						start.setTotalM(mcData.getTotalM());
 						
 						// Set some initial goal state values.
-						goal.setTotalC( _mcData.getTotalC() );
-						goal.setTotalM( _mcData.getTotalM() );
+						goal.setTotalC(mcData.getTotalC());
+						goal.setTotalM(mcData.getTotalM());
 						
 						// Find a solution!
-						AStar astar = new AStar( start, goal );
-						_mcData.print( astar.path() );
+						AStar astar = new AStar(start, goal);
+						mcData.print(astar.path());
 						
 					}
 					
 					// Execute puzzle: Missionaries and Cannibals
 					
-					else if( _hName.equals( "MandCCount" ) ) {
+					else if (hName.equals("MandCCount")) {
 
 						// Set the start state and goal state.
-						MandCCount start = (MandCCount)_mcData.getStart();
-						MandCCount goal = (MandCCount)_mcData.getGoal();
+						MandCCount start = (MandCCount)mcData.getStart();
+						MandCCount goal = (MandCCount)mcData.getGoal();
 						
 						// Set some initial start state values.
-						start.setGoal( goal );
-						start.setTotalC( _mcData.getTotalC() );
-						start.setTotalM( _mcData.getTotalM() );
+						start.setGoal(goal);
+						start.setTotalC(mcData.getTotalC());
+						start.setTotalM(mcData.getTotalM());
 						
 						// Set some initial goal state values.
-						goal.setTotalC( _mcData.getTotalC() );
-						goal.setTotalM( _mcData.getTotalM() );
+						goal.setTotalC(mcData.getTotalC());
+						goal.setTotalM(mcData.getTotalM());
 						
 						// Find a solution!
-						AStar astar = new AStar( start, goal );
-						_mcData.print( astar.path() );
+						AStar astar = new AStar(start, goal);
+						mcData.print(astar.path());
 						
 					}
 					
 					// Execute puzzle: ShortestPaths
 					
-					else if( _hName.equals( "ShortestPathsNonMono" ) ) {
+					else if (hName.equals("ShortestPathsNonMono")) {
 						
 						// Set the start state and goal state.
-						ShortestPathsNonMono start = (ShortestPathsNonMono)_spData.getMap().get( _spData.getStart() );
-						ShortestPathsNonMono goal = (ShortestPathsNonMono)_spData.getMap().get( _spData.getGoal() );
+						ShortestPathsNonMono start = (ShortestPathsNonMono)spData.getMap().get(spData.getStart());
+						ShortestPathsNonMono goal = (ShortestPathsNonMono)spData.getMap().get(spData.getGoal());
 						start.setGoal( goal );
 						
 						// Find a solution!
-						AStar astar = new AStar( start, goal );
-						_spData.print( astar.path() );
+						AStar astar = new AStar(start, goal);
+						spData.print(astar.path());
 						
 					}
 
 					// Execute puzzle: ShortestPaths
 					
-					else if( _hName.equals( "ShortestPathsMono" ) ) {
+					else if (hName.equals("ShortestPathsMono")) {
 
 						// Set the start state and goal state.
-						ShortestPathsMono start = (ShortestPathsMono)_spData.getMap().get( _spData.getStart() );
-						ShortestPathsMono goal = (ShortestPathsMono)_spData.getMap().get( _spData.getGoal() );
+						ShortestPathsMono start = (ShortestPathsMono)spData.getMap().get(spData.getStart());
+						ShortestPathsMono goal = (ShortestPathsMono)spData.getMap().get(spData.getGoal());
 						start.setGoal( goal );
 						
 						// Find a solution!
-						AStar astar = new AStar( start, goal );
-						_spData.print( astar.path() );
+						AStar astar = new AStar(start, goal);
+						spData.print(astar.path());
 						
 					}
 					
 					// Execute puzzle: Grid
 					
-					else if( _hName.equals( "GridManhattan" ) ) {
+					else if (hName.equals("GridManhattan")) {
 
 						// Set the start state and goal state.
-						GridManhattan start = (GridManhattan)_gridData.getStart();
-						GridManhattan goal = (GridManhattan)_gridData.getGoal();
+						GridManhattan start = (GridManhattan)gridData.getStart();
+						GridManhattan goal = (GridManhattan)gridData.getGoal();
 						start.setGoal( goal );
 						
 						// Find a solution!
 						AStar astar = new AStar( start, goal );
-						_gridData.print( astar.path() );
+						gridData.print(astar.path());
 						
 					}
 					
 					// Execute puzzle: Grid
 					
-					else if( _hName.equals( "GridStraight" ) ) {
+					else if (hName.equals("GridStraight")) {
 
 						// Set the start state and goal state.
-						GridStraight start = (GridStraight)_gridData.getStart();
-						GridStraight goal = (GridStraight)_gridData.getGoal();
-						start.setGoal( goal );
+						GridStraight start = (GridStraight)gridData.getStart();
+						GridStraight goal = (GridStraight)gridData.getGoal();
+						start.setGoal(goal);
 						
 						// Find a solution!
-						AStar astar = new AStar( start, goal );
-						_gridData.print( astar.path() );
+						AStar astar = new AStar(start, goal);
+						gridData.print(astar.path());
 						
 					}
 					
 					// Unsupported...
 					
 					else  {
-						throw new UnsupportedOperationException( "PuzzleMuncher.parse " +
-								"error: " + _hName + " not supported at this time." );
+						throw new UnsupportedOperationException("PuzzleMuncher.parse error: " + hName + " not supported at this time.");
 					}
 					
 					// Output some statistics, if applicable.
@@ -275,24 +271,24 @@ public class PuzzleMuncher {
 					// name for convenience.
 					if( Global.getLogFile() != null ) {
 						
-						Global.log( "\nHeuristic: " + _hName );
+						Global.log("\nHeuristic: " + hName);
 						
 					}
 					
 					// Report the total number of nodes opened.
-					if( _nodesOpened ) {
-						Global.log( "NodesOpened: " + Global.getNodesOpened());
+					if (nodesOpened) {
+						Global.log("NodesOpened: " + Global.getNodesOpened());
 					}
 					
 					// Report the number of nodes moved from the closed list
 					// back to the open list.
-					if( _numReopened ) { 
-						Global.log( "NumReopened: " + Global.getNodesReopened());
+					if (numReopened) { 
+						Global.log("NumReopened: " + Global.getNodesReopened());
 					}
 					
 					// Report the number of nodes on the closed list.
-					if( _nodesClosed ) {
-						Global.log( "NodesClosed: " + Global.getNodesClosed());
+					if (nodesClosed) {
+						Global.log("NodesClosed: " + Global.getNodesClosed());
 					}
 					
 				}
@@ -301,26 +297,22 @@ public class PuzzleMuncher {
 				else if( strToken.equals( "OutFile" ) ) {
 
 					// Get the output filename.
-					_lexer.pushBack( token );
-					_outFile = ParseFile.parse( _lexer );
+					lexer.pushBack( token );
+					outFile = ParseFile.parse(lexer);
 
 					// Is filename in use by log file already?
-					if( _outFile.equals( _logFile ) ) {
-						System.err.println( "PuzzleMuncher.parse error: " +
-								"Output filename '" + _errFile + "' is already " +
-								"in use by the log file. Defaulting to standard output." );
-						Global.setOutFile( null );
-						_outFile = null;
+					if (outFile.equals(logFile)) {
+						System.err.println("PuzzleMuncher.parse error: Output filename '" + errFile + "' is already in use by the log file. Defaulting to standard output.");
+						Global.setOutFile(null);
+						outFile = null;
 						continue;
 					}
 					
 					// Is filename in use by error file already?
-					if( _outFile.equals( _errFile ) ) {
-						System.err.println( "PuzzleMuncher.parse error: " +
-								"Output filename '" + _errFile + "' is already " +
-						"in use by the error file. Defaulting to standard output." );
-						Global.setOutFile( null );
-						_outFile = null;
+					if (outFile.equals(errFile)) {
+						System.err.println("PuzzleMuncher.parse error: Output filename '" + errFile + "' is already in use by the error file. Defaulting to standard output.");
+						Global.setOutFile(null);
+						outFile = null;
 						continue;
 					}
 					
@@ -334,7 +326,7 @@ public class PuzzleMuncher {
 					// Open the new file. If the file already exists,
 					// it'll append automatically.
 					tfw = new TextFileWriter();
-					if( tfw.open(  new File( _outFile ) ) ) {
+					if (tfw.open(new File(outFile))) {
 						Global.setOutFile( tfw );
 					}
 					else {
@@ -347,26 +339,22 @@ public class PuzzleMuncher {
 				else if( strToken.equals( "LogFile" ) ) {
 					
 					// Get the log filename.
-					_lexer.pushBack( token );
-					_logFile = ParseFile.parse( _lexer );
+					lexer.pushBack( token );
+					logFile = ParseFile.parse(lexer);
 
 					// Is filename in use by output file already?
-					if( _logFile.equals( _outFile ) ) {
-						System.err.println( "PuzzleMuncher.parse error: " +
-								"Log filename '" + _errFile + "' is already " +
-						"in use by the output file. Defaulting to standard output." );
-						Global.setLogFile( null );
-						_logFile = null;
+					if (logFile.equals(outFile)) {
+						System.err.println("PuzzleMuncher.parse error: Log filename '" + errFile + "' is already in use by the output file. Defaulting to standard output.");
+						Global.setLogFile(null);
+						logFile = null;
 						continue;
 					}
 					
 					// Is filename in use by error file already?
-					if( _logFile.equals( _errFile ) ) {
-						System.err.println( "PuzzleMuncher.parse error: " +
-								"Log filename '" + _errFile + "' is already " +
-						"in use by the error file. Defaulting to standard output." );
-						Global.setLogFile( null );
-						_logFile = null;
+					if (logFile.equals(errFile)) {
+						System.err.println("PuzzleMuncher.parse error: Log filename '" + errFile + "' is already in use by the error file. Defaulting to standard output.");
+						Global.setLogFile(null);
+						logFile = null;
 						continue;
 					}
 					
@@ -380,7 +368,7 @@ public class PuzzleMuncher {
 					// Open the new file. If the file already exists,
 					// it'll append automatically.
 					tfw = new TextFileWriter();
-					if( tfw.open(  new File( _logFile ) ) ) {
+					if (tfw.open(new File(logFile))) {
 						Global.setLogFile( tfw );
 					}
 					else {
@@ -393,26 +381,22 @@ public class PuzzleMuncher {
 				else if( strToken.equals( "ErrFile" ) ) {
 					
 					// Get the error filename.
-					_lexer.pushBack( token );
-					_errFile = ParseFile.parse( _lexer );
+					lexer.pushBack( token );
+					errFile = ParseFile.parse(lexer);
 				
 					// Is filename in use by log file already?
-					if( _errFile.equals( _logFile ) ) {
-						System.err.println( "PuzzleMuncher.parse error: " +
-								"Error filename '" + _errFile + "' is already " +
-								"in use by the log file. Defaulting to standard output." );
-						Global.setErrFile( null );
-						_errFile = null;
+					if (errFile.equals(logFile)) {
+						System.err.println("PuzzleMuncher.parse error: Error filename '" + errFile + "' is already in use by the log file. Defaulting to standard output.");
+						Global.setErrFile(null);
+						errFile = null;
 						continue;
 					}
 					
 					// Is filename in use by output file already?
-					if( _errFile.equals( _outFile ) ) {
-						System.err.println( "PuzzleMuncher.parse error: " +
-								"Error filename '" + _errFile + "' is already " +
-						"in use by the output file. Defaulting to standard output." );
-						Global.setErrFile( null );
-						_errFile = null;
+					if (errFile.equals(outFile)) {
+						System.err.println("PuzzleMuncher.parse error: Error filename '" + errFile + "' is already in use by the output file. Defaulting to standard output.");
+						Global.setErrFile(null);
+						errFile = null;
 						continue;
 					}
 					
@@ -426,7 +410,7 @@ public class PuzzleMuncher {
 					// Open the new file. If the file already exists,
 					// it'll append automatically.
 					tfw = new TextFileWriter();
-					if( tfw.open(  new File( _errFile ) ) ) {
+					if (tfw.open(new File(errFile))) {
 						Global.setErrFile( tfw );
 					}
 					else {
@@ -439,8 +423,8 @@ public class PuzzleMuncher {
 				else if( strToken.equals( "OpenListBound" ) ) {
 					
 					// Push token back onto stream before parsing value.
-					_lexer.pushBack( token );
-					Global.setOpenListBound( ParseSearchCtrl.parse( _lexer ) );
+					lexer.pushBack(token);
+					Global.setOpenListBound(ParseSearchCtrl.parse(lexer));
 					
 				}
 				
@@ -448,8 +432,8 @@ public class PuzzleMuncher {
 				else if( strToken.equals( "TotalNodesBound" ) ) {
 
 					// Push token back onto stream before parsing value.
-					_lexer.pushBack( token );
-					Global.setTotalNodesBound( ParseSearchCtrl.parse( _lexer ) );
+					lexer.pushBack(token);
+					Global.setTotalNodesBound(ParseSearchCtrl.parse(lexer));
 					
 				}
 				
@@ -457,16 +441,14 @@ public class PuzzleMuncher {
 				else if( strToken.equals( "TimeBound" ) ) {
 
 					// Push token back onto stream before parsing value.
-					_lexer.pushBack( token );
-					Global.setTimeBound( ParseSearchCtrl.parse( _lexer ) );
+					lexer.pushBack(token);
+					Global.setTimeBound(ParseSearchCtrl.parse(lexer));
 					
 				}
 				
 				// Handle RESULTS / SolnPathLen
-				else if( strToken.equals( "SolnPathLen" ) ) {
-					
-					_solnPathLen = true;
-					
+				else if (strToken.equals("SolnPathLen")) {
+					solnPathLen = true;
 				}
 				
 				// Handle RESULTS / StatePath
@@ -477,10 +459,8 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle RESULTS / MoveSeq
-				else if( strToken.equals( "MoveSeq" ) ) {
-					
-					_moveSeq = true;
-					
+				else if (strToken.equals("MoveSeq")) {
+					moveSeq = true;
 				}
 				
 				// Handle RESULTS / Debug
@@ -491,31 +471,24 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle STATS / NodesOpened
-				else if( strToken.equals( "NodesOpened" ) ) {
-					
-					_nodesOpened = true;
-					
+				else if (strToken.equals("NodesOpened")) {
+					nodesOpened = true;
 				}
 				
 				// Handle STATS / OpenListMaxLen
-				else if( strToken.equals( "OpenListMaxLen" ) ) {
-					
+				else if (strToken.equals("OpenListMaxLen")) {
 					// Can be called at any time.
-					Global.log( "OpenListMaxLen: " + Global.getOpenListMaxLen() );
+					Global.log("OpenListMaxLen: " + Global.getOpenListMaxLen());
 				}
 				
 				// Handle STATS / NodesClosed
-				else if( strToken.equals( "NodesClosed" ) ) {
-					
-					_nodesClosed = true;
-					
+				else if (strToken.equals("NodesClosed")) {
+					nodesClosed = true;
 				}
 				
 				// Handle STATS / NumReopened
-				else if( strToken.equals( "NumReopened" ) ) {
-					
-					_numReopened = true;
-					
+				else if (strToken.equals("NumReopened")) {
+					numReopened = true;
 				}
 				
 				// Handle STATS / OpenClosedRatio
@@ -548,43 +521,43 @@ public class PuzzleMuncher {
 	 * @author <a href="mailto:zanussi@cs.unm.edu">Michael Zanussi</a>
 	 * @version 1.0 (29 Mar 2004) 
 	 */
-	private class _MCPuzzleData {
+	private class MCPuzzleData {
 		
 		// The heuristic name.
-		private String _hName;
+		private String hName;
 		
 		// Holds the start and goal state array.
 		//  Row 0 cols 0 and 1 hold the west bank cannibal and missionary count.
 		//  Row 0 cols 0 and 1 hold the east bank cannibal and missionary count.
 		//  Row 0 col 1 holds the boat location (1=west,0=east)
-		private int[][] _startStateArray;
-		private int[][] _goalStateArray;
+		private int[][] startStateArray;
+		private int[][] goalStateArray;
 		
 		// The capacity of the boat.
-		private int _boatCapacity;
+		private int boatCapacity;
 		
 		// The total number of cannibals and missionaries.
-		private int _totalC;
-		private int _totalM;
+		private int totalC;
+		private int totalM;
 		
 		// The start state.
-		private MandC _start;
+		private MandC start;
 		
 		// The goal state.
-		private MandC _goal;
+		private MandC goal;
 		
 		/**
 		 * No-arg constructor.
 		 */
-		public _MCPuzzleData() {
+		public MCPuzzleData() {
 			
-			_boatCapacity = 0;
-			_goal = null;
-			_goalStateArray = null;
-			_start = null;
-			_startStateArray = null;
-			_totalC = 0;
-			_totalM = 0;
+			boatCapacity = 0;
+			goal = null;
+			goalStateArray = null;
+			start = null;
+			startStateArray = null;
+			totalC = 0;
+			totalM = 0;
 			
 		}
 		
@@ -593,8 +566,8 @@ public class PuzzleMuncher {
 		 */
 		public void calcTotalMandC() {
 			
-			_totalC = _startStateArray[0][0] + _startStateArray[1][0];
-			_totalM = _startStateArray[0][1] + _startStateArray[1][1];
+			totalC = startStateArray[0][0] + startStateArray[1][0];
+			totalM = startStateArray[0][1] + startStateArray[1][1];
 			
 		}
 		
@@ -605,7 +578,7 @@ public class PuzzleMuncher {
 		 */
 		public MandC getGoal() {
 			
-			return _goal;
+			return goal;
 			
 		}
 		
@@ -616,7 +589,7 @@ public class PuzzleMuncher {
 		 */
 		public MandC getStart() {
 			
-			return _start;
+			return start;
 			
 		}
 
@@ -627,7 +600,7 @@ public class PuzzleMuncher {
 		 */
 		public int getTotalC() {
 			
-			return _totalC;
+			return totalC;
 			
 		}
 		
@@ -638,18 +611,18 @@ public class PuzzleMuncher {
 		 */
 		public int getTotalM() {
 			
-			return _totalM;
+			return totalM;
 		}
 		
 		/**
 		 * Prints the completed path and other useful statistics.
 		 */
-		public void print( LinkedList path ) {
+		public void print(List<Object> path) {
 			
 			// No solution.
-			if( path == null ) {
+			if (path == null) {
 				
-				Global.output( "No solution." );
+				Global.output("No solution.");
 				
 			}
 			
@@ -672,23 +645,23 @@ public class PuzzleMuncher {
 				
 				// Reverse the contents of the list then grab an iterator.
 				Collections.reverse(path);
-				Iterator it = path.iterator();
+				Iterator<Object> it = path.iterator();
 				
-				while( it.hasNext() ) {
+				while (it.hasNext()) {
 					
 					// Get next move.
 					MandC s = (MandC)it.next();
 					
 					// This shouldn't happen, but check anyhow.
-					if( s == null) {
+					if (s == null) {
 						break;
 					}
 					
 					// Get the start state off the list and
 					// store it in prev.
-					if( justStarted ) {
+					if (justStarted) {
 						justStarted = false;
-						prevBank = ( s.getBank() == MandC.WEST ? "West" : "East" );
+						prevBank = (s.getBank() == MandC.WEST ? "West" : "East");
 						prevC = s.getC();
 						prevM = s.getM();
 						prevState = s.getLabel();
@@ -699,24 +672,21 @@ public class PuzzleMuncher {
 					move++;
 					
 					// Calculate the current cannibal and missionary numbers.
-					int currentC = Math.abs( prevC - s.getC() );
-					int currentM = Math.abs( prevM - s.getM() );
+					int currentC = Math.abs(prevC - s.getC());
+					int currentM = Math.abs(prevM - s.getM());
 
 					// Print the move sequence, if applicable.
-					if( _moveSeq ) {
-						Global.output( "MOVE " + move + ": " +
-								"FERRY " + currentC + " Cannibals and " +
-								currentM + " Missionaries FROM " + prevBank + " TO " + 
-								( s.getBank() == MandC.WEST ? "West" : "East" ) );
+					if (moveSeq) {
+						Global.output("MOVE " + move + ": FERRY " + currentC + " Cannibals and " + currentM + " Missionaries FROM " + prevBank + " TO " + (s.getBank() == MandC.WEST ? "West" : "East"));
 					}
 					
 					// *DEBUG*
-					if( Global.getDebug() ) {
-						System.out.println( "*DEBUG* " + prevState + " -> " + s.getLabel() );
+					if (Global.getDebug()) {
+						System.out.println("*DEBUG* " + prevState + " -> " + s.getLabel());
 					}
 
 					// Save the current state.
-					prevBank = ( s.getBank() == MandC.WEST ? "West" : "East" );
+					prevBank = (s.getBank() == MandC.WEST ? "West" : "East");
 					prevC = s.getC();
 					prevM = s.getM();
 					prevState = s.getLabel();
@@ -724,8 +694,8 @@ public class PuzzleMuncher {
 				}
 				
 				// Report the number of moves, if applicable.
-				if( _solnPathLen ) {
-					Global.log( "SolnPathLen: " + move );
+				if (solnPathLen) {
+					Global.log("SolnPathLen: " + move);
 				}
 				
 			}
@@ -737,9 +707,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param capacity the boat capacity.
 		 */
-		public void setBoatCapacity( int capacity ) { 
+		public void setBoatCapacity(int capacity) { 
 			
-			_boatCapacity = capacity; 
+			boatCapacity = capacity; 
 			
 		}
 
@@ -748,18 +718,17 @@ public class PuzzleMuncher {
 		 * 
 		 * @param state the goal state.
 		 */
-		public void setGoal( int[][] state ) { 
+		public void setGoal(int[][] state) { 
 			
-			_goalStateArray = state; 
+			goalStateArray = state;
 			
-			if( _hName.equals( "MandCTrips" ) ) {
-				_goal = new MandCTrips( state[0][0], state[0][1], state[2][0], null );
+			if (hName.equals("MandCTrips")) {
+				goal = new MandCTrips(state[0][0], state[0][1], state[2][0], null);
+			} else if(hName.equals("MandCCount")) {				
+				goal = new MandCCount(state[0][0], state[0][1], state[2][0], null);
 			}
-			else if( _hName.equals( "MandCCount" ) ) {				
-				_goal = new MandCCount( state[0][0], state[0][1], state[2][0], null );
-			}
 			
-			_goal.setBoatCapacity( _boatCapacity );
+			goal.setBoatCapacity(boatCapacity);
 			
 		}
 		
@@ -768,9 +737,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param hName the heuristic name.
 		 */
-		public void setHName( String hName ) { 
+		public void setHName(String hName) { 
 			
-			_hName = hName; 
+			this.hName = hName; 
 			
 		}
 		
@@ -779,18 +748,18 @@ public class PuzzleMuncher {
 		 * 
 		 * @param state the start state.
 		 */
-		public void setStart( int[][] state ) { 
+		public void setStart(int[][] state) { 
 			
-			_startStateArray = state; 
+			startStateArray = state;
 
-			if( _hName.equals( "MandCTrips" ) ) {
-				_start = new MandCTrips( state[0][0], state[0][1], state[2][0], null );
+			if (hName.equals("MandCTrips")) {
+				start = new MandCTrips(state[0][0], state[0][1], state[2][0], null);
 			}
-			else if( _hName.equals( "MandCCount" ) ) {				
-				_start = new MandCCount( state[0][0], state[0][1], state[2][0], null );
+			else if(hName.equals("MandCCount")) {				
+				start = new MandCCount(state[0][0], state[0][1], state[2][0], null);
 			}
 			
-			_start.setBoatCapacity( _boatCapacity );
+			start.setBoatCapacity(boatCapacity);
 			
 		}
 				
@@ -803,29 +772,29 @@ public class PuzzleMuncher {
 	 * @author <a href="mailto:zanussi@cs.unm.edu">Michael Zanussi</a>
 	 * @version 1.0 (29 Mar 2004) 
 	 */
-	private class _GridPuzzleData {
+	private class GridPuzzleData {
 		
 		// The heuristic name.
-		private String _hName;
+		private String hName;
 
 		// The grid size (square).
-		private int _gridSize;
+		private int gridSize;
 		
 		// The start and goal states.
-		private Grid _start;
-		private Grid _goal;
+		private Grid start;
+		private Grid goal;
 		
 		// The obstacles table.
-		private int[][] _obstacles;
+		private int[][] obstacles;
 		
 		/**
 		 * No-arg constructor.
 		 */
-		public _GridPuzzleData() {
+		public GridPuzzleData() {
 			
-			_gridSize = 0;
-			_start = null;
-			_goal = null;
+			gridSize = 0;
+			start = null;
+			goal = null;
 			
 		}
 		
@@ -836,7 +805,7 @@ public class PuzzleMuncher {
 		 */
 		public Grid getGoal() { 
 			
-			return _goal; 
+			return goal; 
 			
 		}
 		
@@ -847,7 +816,7 @@ public class PuzzleMuncher {
 		 */
 		public int[][] getObstacles() { 
 			
-			return _obstacles; 
+			return obstacles; 
 			
 		}
 		
@@ -858,7 +827,7 @@ public class PuzzleMuncher {
 		 */
 		public int getSize() { 
 			
-			return _gridSize; 
+			return gridSize; 
 			
 		}
 		
@@ -869,19 +838,19 @@ public class PuzzleMuncher {
 		 */
 		public Grid getStart() { 
 			
-			return _start; 
+			return start; 
 			
 		}
 		
 		/**
 		 * Prints the completed path.
 		 */
-		public void print( LinkedList path ) {
+		public void print(List<Object> path) {
 			
 			// No solution.
-			if( path == null ) {
+			if (path == null) {
 				
-				Global.output( "No solution." );
+				Global.output("No solution.");
 				
 			}
 			
@@ -891,7 +860,7 @@ public class PuzzleMuncher {
 				// Reverse the contents of the list then 
 				// grab an iterator.
 				Collections.reverse(path);
-				Iterator it = path.iterator();
+				Iterator<Object> it = path.iterator();
 				
 				// Just starting?
 				boolean justStarted = true;
@@ -902,19 +871,19 @@ public class PuzzleMuncher {
 				// The move counter.
 				int move = 0;
 				
-				while( it.hasNext() ) {
+				while (it.hasNext()) {
 					
 					// Get next move.
 					Grid s = (Grid)it.next();
 					
 					// This shouldn't happen, but check anyway.
-					if( s == null) {
+					if (s == null) {
 						break;
 					}
 					
 					// Get the start state off the list and
 					// store it in prev.
-					if( justStarted ) {
+					if (justStarted) {
 						justStarted = false;
 						prevCell = s.getLabel();
 						continue;
@@ -924,8 +893,8 @@ public class PuzzleMuncher {
 					move++;
 					
 					// Print the move sequence, if applicable.
-					if( _moveSeq ) {
-						Global.output( "MOVE " + move + ": TRAVEL FROM " + prevCell + " TO " + s.getLabel() );
+					if (moveSeq) {
+						Global.output("MOVE " + move + ": TRAVEL FROM " + prevCell + " TO " + s.getLabel());
 					}
 					
 					prevCell = s.getLabel();
@@ -933,8 +902,8 @@ public class PuzzleMuncher {
 				}
 				
 				// Report the number of moves, if applicable.
-				if( _solnPathLen ) {
-					Global.log( "SolnPathLen: " + move );
+				if (solnPathLen) {
+					Global.log("SolnPathLen: " + move);
 				}
 				
 			}
@@ -947,27 +916,24 @@ public class PuzzleMuncher {
 		 * @param state the start state.
 		 * @throws IllegalArgumentException If grid coordinates exceed grid size.
 		 */
-		public void setGoal( Vector state ) throws IllegalArgumentException { 
+		public void setGoal(List<Integer> state) { 
 			
-			int x = ((Integer)state.get( 0 )).intValue();
-			int y = ((Integer)state.get( 1 )).intValue();
+			int x = state.get(0);
+			int y = state.get(1);
 			
-			if( ( x > _gridSize - 1  ) || ( y > _gridSize - 1 ) ) {
-				throw new IllegalArgumentException( "_GridPuzzleData.setGoal error: " +
-						"X and/or Y coordinates exceed grid size. X = " + x + ", Y = "
-						+ y + ", Grid size = " + _gridSize );
+			if ((x > gridSize - 1) || (y > gridSize - 1)) {
+				throw new IllegalArgumentException("_GridPuzzleData.setGoal error: X and/or Y coordinates exceed grid size. X = " + x + ", Y = " + y + ", Grid size = " + gridSize);
 			}
 			
-			if( _hName.equals( "GridManhattan" ) ) {
-				_goal = new GridManhattan( x, y, 1.0, null );
-			}
-			else if( _hName.equals( "GridStraight" ) ) {				
-				_goal = new GridStraight( x, y, 1.0, null );
+			if (hName.equals("GridManhattan")) {
+				goal = new GridManhattan(x, y, 1.0, null);
+			} else if(hName.equals("GridStraight")) {				
+				goal = new GridStraight(x, y, 1.0, null);
 			}
 			
-			_goal.setTotalX( _gridSize );
-			_goal.setTotalY( _gridSize );
-			_goal.setObstacles( _obstacles );
+			goal.setTotalX(gridSize);
+			goal.setTotalY(gridSize);
+			goal.setObstacles(obstacles);
 			
 		}
 		
@@ -976,9 +942,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param hname the heuristic name.
 		 */
-		public void setHName( String hname ) { 
+		public void setHName(String hname) { 
 			
-			_hName = hname; 
+			this.hName = hname; 
 			
 		}
 		
@@ -987,9 +953,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param obstacles the obstacle table.
 		 */
-		public void setObstacles( int[][] obstacles ) { 
+		public void setObstacles(int[][] obstacles) { 
 			
-			_obstacles = obstacles; 
+			this.obstacles = obstacles; 
 			
 		}
 		
@@ -998,9 +964,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param size the size of the grid.
 		 */
-		public void setSize( int size ) {
+		public void setSize(int size) {
 			
-			_gridSize = size;
+			gridSize = size;
 			
 		}
 		
@@ -1010,27 +976,24 @@ public class PuzzleMuncher {
 		 * @param state the start state.
 		 * @throws IllegalArgumentException If grid coordinates exceed grid size.
 		 */
-		public void setStart( Vector state ) throws IllegalArgumentException { 
+		public void setStart(List<Integer> state) { 
 			
-			int x = ((Integer)state.get( 0 )).intValue();
-			int y = ((Integer)state.get( 1 )).intValue();
+			int x = state.get(0);
+			int y = state.get(1);
 			
-			if( ( x > _gridSize - 1  ) || ( y > _gridSize - 1 ) ) {
-				throw new IllegalArgumentException( "_GridPuzzleData.setStart error: " +
-						"X and/or Y coordinates exceed grid size. X = " + x + ", Y = "
-						+ y + ", Grid size = " + _gridSize );
+			if ((x > gridSize - 1) || (y > gridSize - 1)) {
+				throw new IllegalArgumentException("_GridPuzzleData.setStart error: X and/or Y coordinates exceed grid size. X = " + x + ", Y = " + y + ", Grid size = " + gridSize);
 			}
 			
-			if( _hName.equals( "GridManhattan" ) ) {
-				_start = new GridManhattan( x, y, 1.0, null );
-			}
-			else if( _hName.equals( "GridStraight" ) ) {				
-				_start = new GridStraight( x, y, 1.0, null );
+			if (hName.equals("GridManhattan")) {
+				start = new GridManhattan(x, y, 1.0, null);
+			} else if(hName.equals("GridStraight")) {				
+				start = new GridStraight(x, y, 1.0, null);
 			}
 			
-			_start.setTotalX( _gridSize );
-			_start.setTotalY( _gridSize );
-			_start.setObstacles( _obstacles );
+			start.setTotalX(gridSize);
+			start.setTotalY(gridSize);
+			start.setObstacles(obstacles);
 			
 		}
 		
@@ -1044,7 +1007,7 @@ public class PuzzleMuncher {
 	 * @author <a href="mailto:zanussi@cs.unm.edu">Michael Zanussi</a>
 	 * @version 1.0 (29 Mar 2004) 
 	 */
-	private class _SPPuzzleData {
+	private class SPPuzzleData {
 		
 		// Given puzzle data, indexes to start state (BEGIN),
 		// goal state (END), and cost (DISTANCE).
@@ -1053,33 +1016,33 @@ public class PuzzleMuncher {
 		private static final int DISTANCE = 2;
 		
 		// HashMap to hold puzzle data.
-		private Map map;
+		private Map<String, ShortestPaths> map;
 		
 		// The heuristic name.
-		private String _hName;
+		private String hName;
 		
 		// The start and goal states.
-		private String _start;
-		private String _goal;
+		private String start;
+		private String goal;
 		
 		// The city list.
-		private Vector _cityList;
+		private List<String> cityList;
 		
 		// The city/distance list.
-		private Vector _distList;
+		private List<String[]> distList;
 		
 		/**
 		 * No-arg constructor.
 		 */
-		public _SPPuzzleData() {
+		public SPPuzzleData() {
 			
-			map = new HashMap();
+			map = new HashMap<String, ShortestPaths>();
 			
-			_cityList = null;
-			_distList = null;
-			_hName = null;
-			_goal = null;
-			_start = null;
+			//cityList = null;
+			distList = null;
+			hName = null;
+			goal = null;
+			start = null;
 			
 		}
 		
@@ -1089,78 +1052,64 @@ public class PuzzleMuncher {
 		 */
 		public void fillTable() {
 			
-			if( _hName.equals( "ShortestPathsNonMono" ) ) {
+			if (hName.equals("ShortestPathsNonMono")) {
 				
-				for( int i = 0; i < _distList.size(); i++ ) {
+				for (int i = 0; i < distList.size(); i++) {
 					
 					// Retrieve the city/distance pair.
-					String[] data = (String[])_distList.get( i );
+					String[] data = distList.get(i);
 					// Retrieve the beginning city's list of destination cities.
-					ShortestPathsNonMono bcl = (ShortestPathsNonMono)_getCityList( data[BEGIN] );
+					ShortestPathsNonMono bcl = (ShortestPathsNonMono)getCityList(data[BEGIN]);
 					// Retrieve the ending city's list of destination cities.
-					ShortestPathsNonMono ecl = (ShortestPathsNonMono)_getCityList( data[END] );
+					ShortestPathsNonMono ecl = (ShortestPathsNonMono)getCityList(data[END]);
 					ecl.parent = bcl;
 					
 					// Setup link to end state.
-					ShortestPathsNonMono endCity = new ShortestPathsNonMono( 
-							data[END], 
-							Double.parseDouble( data[DISTANCE] ), 
-							bcl );
-					bcl.children.add( endCity );
+					ShortestPathsNonMono endCity = new ShortestPathsNonMono(data[END], Double.parseDouble(data[DISTANCE]), bcl);
+					bcl.children.add(endCity);
 					
 					// Setup link to start state.
-					ShortestPathsNonMono beginCity = new ShortestPathsNonMono(
-							data[BEGIN],
-							Double.parseDouble( data[DISTANCE] ),
-							ecl );
-					ecl.children.add( beginCity );
+					ShortestPathsNonMono beginCity = new ShortestPathsNonMono(data[BEGIN], Double.parseDouble(data[DISTANCE]), ecl);
+					ecl.children.add(beginCity);
 					
 				}
 				
 				// Now that table has been filled out, we can attach the
 				// correct children lists to each city.
 				Iterator it = map.entrySet().iterator();
-				while( it.hasNext() ) {
+				while (it.hasNext()) {
 					
 					Map.Entry entry = (Map.Entry)it.next();
 					ShortestPathsNonMono ll = (ShortestPathsNonMono)entry.getValue();
 					Iterator llit = ll.children();
-					while( llit.hasNext() ) {
+					while (llit.hasNext()) {
 						
 						ShortestPathsNonMono sp = (ShortestPathsNonMono)llit.next();
-						List cityList = ((ShortestPathsNonMono)map.get( sp.getLabel() )).children;
+						List<Object> cityList = ((ShortestPathsNonMono)map.get(sp.getLabel())).children;
 						sp.children = cityList;
 						
 					}
 					
 				}
-			}
-			
-			else if( _hName.equals( "ShortestPathsMono" ) ) {
+			} else if (hName.equals("ShortestPathsMono")) {
 				
-				for( int i = 0; i < _distList.size(); i++ ) {
+				for (int i = 0; i < distList.size(); i++) {
 					
 					// Retrieve the city/distance pair.
-					String[] data = (String[])_distList.get( i );
+					String[] data = distList.get(i);
 					// Retrieve the beginning city's list of destination cities.
-					ShortestPathsMono bcl = (ShortestPathsMono)_getCityList( data[BEGIN] );
+					ShortestPathsMono bcl = (ShortestPathsMono)getCityList(data[BEGIN]);
 					// Retrieve the ending city's list of destination cities.
-					ShortestPathsMono ecl = (ShortestPathsMono)_getCityList( data[END] );
+					ShortestPathsMono ecl = (ShortestPathsMono)getCityList(data[END]);
 					ecl.parent = bcl;
 					
 					// Setup link to end state.
-					ShortestPathsMono endCity = new ShortestPathsMono( 
-							data[END], 
-							Double.parseDouble( data[DISTANCE] ), 
-							bcl );
-					bcl.children.add( endCity );
+					ShortestPathsMono endCity = new ShortestPathsMono(data[END], Double.parseDouble(data[DISTANCE]), bcl);
+					bcl.children.add(endCity);
 					
 					// Setup link to start state.
-					ShortestPathsMono beginCity = new ShortestPathsMono(
-							data[BEGIN],
-							Double.parseDouble( data[DISTANCE] ),
-							ecl );
-					ecl.children.add( beginCity );
+					ShortestPathsMono beginCity = new ShortestPathsMono(data[BEGIN], Double.parseDouble(data[DISTANCE]), ecl);
+					ecl.children.add(beginCity);
 					
 				}
 
@@ -1168,15 +1117,15 @@ public class PuzzleMuncher {
 				// Now that table has been filled out, we can attach the
 				// correct children lists to each city.
 				Iterator it = map.entrySet().iterator();
-				while( it.hasNext() ) {
+				while (it.hasNext()) {
 					
 					Map.Entry entry = (Map.Entry)it.next();
 					ShortestPathsMono ll = (ShortestPathsMono)entry.getValue();
 					Iterator llit = ll.children();
-					while( llit.hasNext() ) {
+					while (llit.hasNext()) {
 						
 						ShortestPathsMono sp = (ShortestPathsMono)llit.next();
-						List cityList = ((ShortestPathsMono)map.get( sp.getLabel() )).children;
+						List<Object> cityList = ((ShortestPathsMono)map.get(sp.getLabel())).children;
 						sp.children = cityList;
 						
 					}
@@ -1192,7 +1141,7 @@ public class PuzzleMuncher {
 		 */
 		public String getGoal() { 
 			
-			return _goal; 
+			return goal; 
 			
 		}
 		
@@ -1201,7 +1150,7 @@ public class PuzzleMuncher {
 		 * 
 		 * @return the master city map.
 		 */
-		public Map getMap() { 
+		public Map<String, ShortestPaths> getMap() { 
 			
 			return map; 
 			
@@ -1214,19 +1163,19 @@ public class PuzzleMuncher {
 		 */
 		public String getStart() { 
 			
-			return _start; 
+			return start; 
 			
 		}
 		
 		/**
 		 * Prints the completed path and other useful statistics.
 		 */
-		public void print( LinkedList path ) {
+		public void print( List<Object> path ) {
 
 			// No solution.
-			if( path == null ) {
+			if (path == null) {
 				
-				Global.output( "No solution." );
+				Global.output("No solution.");
 				
 			}
 			
@@ -1247,21 +1196,21 @@ public class PuzzleMuncher {
 				
 				// Reverse the contents of the list then grab an iterator.
 				Collections.reverse(path);
-				Iterator it = path.iterator();
+				Iterator<Object> it = path.iterator();
 				
-				while( it.hasNext() ) {
+				while (it.hasNext()) {
 					
 					// Get next move.
 					ShortestPaths s = (ShortestPaths)it.next();
 					
 					// This shouldn't happen, but check anyhow.
-					if( s == null) {
+					if (s == null) {
 						break;
 					}
 					
 					// Get the start state off the list and
 					// store it in prev.
-					if( firstCity ) {
+					if (firstCity) {
 						firstCity = false;
 						prevCity = s.getLabel();
 						continue;
@@ -1271,16 +1220,14 @@ public class PuzzleMuncher {
 					move++;
 					
 					// Print the move sequence, if applicable.
-					if( _moveSeq ) {
-						Global.output( "MOVE " + move + ": TRAVEL FROM " + prevCity + 
-								" TO " + s.getLabel() );
+					if (moveSeq) {
+						Global.output("MOVE " + move + ": TRAVEL FROM " + prevCity + " TO " + s.getLabel());
 					}
 					
 					// *DEBUG*
 					distance += s.getDistance();
-					if( Global.getDebug() ) {
-						System.out.println( "*DEBUG* " + prevCity + " -> " + s.getLabel() + 
-								" (distance = " + s.getDistance() + ")" );
+					if (Global.getDebug()) {
+						System.out.println("*DEBUG* " + prevCity + " -> " + s.getLabel() + " (distance = " + s.getDistance() + ")");
 					}
 
 					// Save this city name.
@@ -1289,13 +1236,13 @@ public class PuzzleMuncher {
 				}
 				
 				// *DEBUG*
-				if( Global.getDebug() ) {
-					System.out.println( "*DEBUG* Total distance traveled: " + distance );
+				if (Global.getDebug()) {
+					System.out.println("*DEBUG* Total distance traveled: " + distance);
 				}
 				
 				// Report the number of moves, if applicable.
-				if( _solnPathLen ) {
-					Global.log( "SolnPathLen: " + move );
+				if (solnPathLen) {
+					Global.log("SolnPathLen: " + move);
 				}
 				
 			}
@@ -1307,9 +1254,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param cityList the city list.
 		 */
-		public void setCityList( Vector cityList ) { 
+		public void setCityList(List<String> cityList) { 
 			
-			_cityList = cityList; 
+			this.cityList = cityList; 
 			
 		}
 		
@@ -1318,9 +1265,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param distList the city/distance pair list.
 		 */
-		public void setDistList( Vector distList ) { 
+		public void setDistList(List<String[]> distList) { 
 			
-			_distList = distList; 
+			this.distList = distList; 
 			
 		}
 		
@@ -1329,9 +1276,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param goal the goal state.
 		 */
-		public void setGoal( String goal ) { 
+		public void setGoal(String goal) { 
 			
-			_goal = goal; 
+			this.goal = goal; 
 			
 		}
 		
@@ -1340,9 +1287,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param hname the heuristic name.
 		 */
-		public void setHName( String hname ) { 
+		public void setHName(String hname) { 
 			
-			_hName = hname; 
+			this.hName = hname; 
 			
 		}
 
@@ -1351,9 +1298,9 @@ public class PuzzleMuncher {
 		 * 
 		 * @param start the start state.
 		 */
-		public void setStart( String start ) { 
+		public void setStart(String start) { 
 			
-			_start = start; 
+			this.start = start; 
 			
 		}
 		
@@ -1364,32 +1311,30 @@ public class PuzzleMuncher {
 		 * @param the city whose children list we desire.
 		 * @return the children list.
 		 */
-		private PuzState _getCityList( String city ) {
+		private PuzState getCityList(String city) {
 			
-			PuzState ps = (PuzState)map.get( city );
+			PuzState ps = (PuzState)map.get(city);
 			
-			if( ps == null ) {
+			if (ps == null) {
 				
 				// City does not exist in hash table yet. Add it, 
 				// then and a new linked list.
 				
-				if( _hName.equals( "ShortestPathsNonMono" ) ) {
+				if (hName.equals("ShortestPathsNonMono")) {
 					
-					ShortestPathsNonMono sp = new ShortestPathsNonMono( city, 0.0, null );
-					sp.children = new LinkedList();
-					map.put( city, sp );
+					ShortestPathsNonMono sp = new ShortestPathsNonMono(city, 0.0, null);
+					sp.children = new LinkedList<Object>();
+					map.put(city, sp);
 					
-				}
-				
-				else if( _hName.equals( "ShortestPathsMono" ) ) {
+				} else if (hName.equals("ShortestPathsMono")) {
 					
-					ShortestPathsMono sp = new ShortestPathsMono( city, 0.0, null );
-					sp.children = new LinkedList();
-					map.put( city, sp );
+					ShortestPathsMono sp = new ShortestPathsMono(city, 0.0, null);
+					sp.children = new LinkedList<Object>();
+					map.put(city, sp);
 					
 				}
 				
-				ps = (PuzState)map.get( city );
+				ps = (PuzState)map.get(city);
 				
 			}
 			
@@ -1399,378 +1344,328 @@ public class PuzzleMuncher {
 		
 	}
 	
-	private _GridPuzzleData _parseGridPuzzle( Lexer lexer ) throws ParsingException {
+	private GridPuzzleData parseGridPuzzle(Lexer lexer) throws ParsingException {
 		
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "Grid" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected 'Grid' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("Grid")) {
+			throw new ParsingException("parseGridPuzzle error: Expected 'Grid' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 
-		_hName = ParseHName.parse( lexer );
+		hName = ParseHName.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( ")" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected ')' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals(")")) {
+			throw new ParsingException("parseGridPuzzle error: Expected ')' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "{" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '{' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("{")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '{' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "GridSize" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected 'Size' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("GridSize")) {
+			throw new ParsingException("parseGridPuzzle error: Expected 'Size' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		int gridSize = ParseInteger.parsePosInteger( lexer );
+		int gridSize = ParseInteger.parsePosInteger(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "StartCoordinates" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected 'StartCoordinates' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("StartCoordinates")) {
+			throw new ParsingException("parseGridPuzzle error: Expected 'StartCoordinates' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		Vector startCoord = ParseNumList.parse( lexer );
+		List<Integer> startCoord = ParseNumList.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "GoalCoordinates" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected 'GoalCoordinates' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("GoalCoordinates")) {
+			throw new ParsingException("parseGridPuzzle error: Expected 'GoalCoordinates' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		Vector goalCoord = ParseNumList.parse( lexer );
+		List<Integer> goalCoord = ParseNumList.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "Obstacles" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected 'Obstacles' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("Obstacles")) {
+			throw new ParsingException("parseGridPuzzle error: Expected 'Obstacles' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		int[][] obstacles = ParseObstacles.parse( lexer, gridSize );
+		int[][] obstacles = ParseObstacles.parse(lexer, gridSize);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "}" ) ) {
-			throw new ParsingException( "_parseGridPuzzle error: " +
-					"Expected '}' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("}")) {
+			throw new ParsingException("parseGridPuzzle error: Expected '}' but received '" + token.getToken() + "'.");
 		}
 
-		_GridPuzzleData data = new _GridPuzzleData();
-		data.setHName( _hName );
-		data.setSize( gridSize );
-		data.setObstacles( obstacles );
-		data.setStart( startCoord );
-		data.setGoal( goalCoord );
+		GridPuzzleData data = new GridPuzzleData();
+		data.setHName(hName);
+		data.setSize(gridSize);
+		data.setObstacles(obstacles);
+		data.setStart(startCoord);
+		data.setGoal(goalCoord);
 		
 		return data;
 		
 	}
 
-	private _MCPuzzleData _parseMCPuzzle( Lexer lexer ) throws ParsingException {
+	private MCPuzzleData parseMCPuzzle(Lexer lexer) throws ParsingException {
 		
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "MissionariesAndCannibals" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected 'MissionariesAndCannibals' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("MissionariesAndCannibals")) {
+			throw new ParsingException("parseMCPuzzle error: Expected 'MissionariesAndCannibals' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 
-		_hName = ParseHName.parse( lexer );
+		hName = ParseHName.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( ")" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected ')' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals(")")) {
+			throw new ParsingException("parseMCPuzzle error: Expected ')' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "{" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '{' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("{")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '{' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "InitialState" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected 'InitialState' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("InitialState")) {
+			throw new ParsingException("parseMCPuzzle error: Expected 'InitialState' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		int[][] initialState = ParseMCState.parse( lexer );
+		int[][] initialState = ParseMCState.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "GoalState" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected 'GoalState' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("GoalState")) {
+			throw new ParsingException("parseMCPuzzle error: Expected 'GoalState' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		int[][] goalState = ParseMCState.parse( lexer );
+		int[][] goalState = ParseMCState.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "BoatCapacity" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected 'BoatCapacity' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("BoatCapacity")) {
+			throw new ParsingException("parseMCPuzzle error: Expected 'BoatCapacity' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		int capacity = ParseInteger.parsePosInteger( lexer );
+		int capacity = ParseInteger.parsePosInteger(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "}" ) ) {
-			throw new ParsingException( "_parseMCPuzzle error: " +
-					"Expected '}' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("}")) {
+			throw new ParsingException("parseMCPuzzle error: Expected '}' but received '" + token.getToken() + "'.");
 		}
 
-		_MCPuzzleData data = new _MCPuzzleData();
-		data.setHName( _hName );
-		data.setBoatCapacity( capacity );
-		data.setStart( initialState );
-		data.setGoal( goalState );
+		MCPuzzleData data = new MCPuzzleData();
+		data.setHName(hName);
+		data.setBoatCapacity(capacity);
+		data.setStart(initialState);
+		data.setGoal(goalState);
 		data.calcTotalMandC();
 		
 		return data;
 		
 	}
 
-	private void _parseN2KPuzzle( Lexer lexer ) throws ParsingException {
+	private void parseN2KPuzzle(Lexer lexer) throws ParsingException {
 		
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "NToTheKPuzzle" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected 'NToTheKPuzzle' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("NToTheKPuzzle")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected 'NToTheKPuzzle' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 
-		_hName = ParseHName.parse( lexer );
+		hName = ParseHName.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( ")" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected ')' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals(")")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected ')' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "{" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected '{' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("{")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected '{' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "StartState" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected 'StartState' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("StartState")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected 'StartState' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		Vector initialState = ParseNKPuzState.parse( lexer );
+		List<Object> initialState = ParseNKPuzState.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "GoalState" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected 'GoalState' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("GoalState")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected 'GoalState' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		Vector goalState = ParseNKPuzState.parse( lexer );
+		List<Object> goalState = ParseNKPuzState.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "}" ) ) {
-			throw new ParsingException( "_parseN2KPuzzle error: " +
-					"Expected '}' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("}")) {
+			throw new ParsingException("parseN2KPuzzle error: Expected '}' but received '" + token.getToken() + "'.");
 		}
 
 	}
 
-	private _SPPuzzleData _parseSPPuzzle( Lexer lexer ) throws ParsingException {
+	private SPPuzzleData parseSPPuzzle( Lexer lexer ) throws ParsingException {
 		
 		Token token = lexer.nextToken();
-		if( !token.getToken().equals( "ShortestPaths" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected 'ShortestPaths' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("ShortestPaths")) {
+			throw new ParsingException("parseSPPuzzle error: Expected 'ShortestPaths' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "(" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '(' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("(")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '(' but received '" + token.getToken() + "'.");
 		}
 
-		_hName = ParseHName.parse( lexer );
+		hName = ParseHName.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( ")" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected ')' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals(")")) {
+			throw new ParsingException("parseSPPuzzle error: Expected ')' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "{" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '{' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("{")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '{' but received '" + token.getToken() + "'.");
 		}
 
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "Cities" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected 'Cities' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("Cities")) {
+			throw new ParsingException("parseSPPuzzle error: Expected 'Cities' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		Vector cityList = ParseCityList.parse( lexer );
+		List<String> cityList = ParseCityList.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "Distances" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected 'Distances' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("Distances")) {
+			throw new ParsingException("parseSPPuzzle error: Expected 'Distances' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		Vector distList = ParseDistList.parse( lexer );
+		List<String[]> distList = ParseDistList.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "StartCity" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected 'StartCity' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("StartCity")) {
+			throw new ParsingException("parseSPPuzzle error: Expected 'StartCity' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		String startState = ParseCityName.parse( lexer );
+		String startState = ParseCityName.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "GoalCity" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected 'GoalCity' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("GoalCity")) {
+			throw new ParsingException("parseSPPuzzle error: Expected 'GoalCity' but received '" + token.getToken() + "'.");
 		}
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "=" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '=' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("=")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '=' but received '" + token.getToken() + "'.");
 		}
 
-		String goalState = ParseCityName.parse( lexer );
+		String goalState = ParseCityName.parse(lexer);
 		
 		token = lexer.nextToken();
-		if( !token.getToken().equals( "}" ) ) {
-			throw new ParsingException( "_parseSPPuzzle error: " +
-					"Expected '}' but received '" + token.getToken() + "'." );
+		if (!token.getToken().equals("}")) {
+			throw new ParsingException("parseSPPuzzle error: Expected '}' but received '" + token.getToken() + "'.");
 		}
 
-		_SPPuzzleData data = new _SPPuzzleData();
-		data.setHName( _hName );
-		data.setStart( startState );
-		data.setGoal( goalState );
-		data.setCityList( cityList );
-		data.setDistList( distList );
+		SPPuzzleData data = new SPPuzzleData();
+		data.setHName(hName);
+		data.setStart(startState);
+		data.setGoal(goalState);
+		data.setCityList(cityList);
+		data.setDistList(distList);
 		
 		return data;
 		
@@ -1779,15 +1674,14 @@ public class PuzzleMuncher {
 	/**
 	 * Reset puzzle data for another run.
 	 */
-	private void _reset() {
+	private void reset() {
 		
-		_solnPathLen = false;
-		_moveSeq = false;
+		solnPathLen = false;
+		moveSeq = false;
 		
-		_nodesOpened = false;
-		_openListMaxLen = false;
-		_nodesClosed = false;
-		_numReopened = false;
+		nodesOpened = false;
+		nodesClosed = false;
+		numReopened = false;
 		
 		Global.reset();
 		
@@ -1815,7 +1709,7 @@ public class PuzzleMuncher {
 		pr.open( input );
 
 		// Create a global object.
-		Global g = new Global();
+		/*Global g = */new Global();
 
 		// Create the lexer.
 		Lexer lexer = new PuzzleLexer( pr );

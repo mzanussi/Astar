@@ -1,6 +1,7 @@
 package com.michaelzanussi.astar;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>ParseNumList</code> class parses the BNF rule <code>NUMLIST</code>,
@@ -22,32 +23,31 @@ public class ParseNumList {
 	 * @return a vector containing the intereger list.
 	 * @throws ParsingException If a problem is encountered while parsing.
 	 */
-	public static Vector parse( Lexer lexer ) throws ParsingException {
+	public static List<Integer> parse(Lexer lexer) throws ParsingException {
 		
 		Token token = null;
-		Vector numList = new Vector();
+		List<Integer> numList = new ArrayList<Integer>();
 		
-		while( true ) {
+		while (true) {
 			
 			// Get the integer, verify it, then store it off.
 			try {
-				Integer i = new Integer( ParseInteger.parseNonNegInteger( lexer ) );
-				numList.add( i );
+				Integer i = new Integer(ParseInteger.parseNonNegInteger(lexer));
+				numList.add(i);
 			}
-			catch( ParsingException e ) {
-				throw new ParsingException( e.getMessage() );
+			catch (ParsingException e) {
+				throw new ParsingException(e.getMessage());
 			}
 			
 			// See if the next token is a comma.
 			token = lexer.nextToken();
-			if( token.getToken().equals( "," ) ) {
+			if (token.getToken().equals(",")) {
 				// More integers follow, continue.
 				continue;
-			}
-			else {
+			} else {
 				// We're done here, but pushback the last token
 				// onto the stack.
-				lexer.pushBack( token );
+				lexer.pushBack(token);
 				return numList;
 			}
 			
