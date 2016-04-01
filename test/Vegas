@@ -1,0 +1,27 @@
+	SolnPathLen StatePath MoveSeq NodesOpened NodesClosed NumReopened
+	Puzzle
+	ShortestPaths (ShortestPathsMono) =
+	{
+	Cities = (Albuquerque,Page,Flagstaff,LasVegas,StGeorge,Gallup,TubaCity,Kingman,Seligman,Sedona,Bittersprings,SantaFe,Moriarity)
+	Distances = ( Albuquerque -> Gallup  = 140,
+	              Bittersprings -> Page = 25,
+	              StGeorge -> LasVegas = 119,
+	              Gallup -> TubaCity = 180,
+	              Gallup -> Flagstaff = 185,
+	              TubaCity -> Flagstaff = 78,
+	              TubaCity -> Page = 74,
+	              Kingman -> LasVegas = 103,
+	              Sedona -> Flagstaff = 30,
+	              Seligman -> Flagstaff = 76,
+	              Seligman -> Kingman = 74,
+	              Bittersprings -> StGeorge = 159,
+	              TubaCity -> Bittersprings = 54,
+	              Albuquerque -> SantaFe = 65,
+	              Moriarity -> Albuquerque = 39,
+	              Moriarity -> SantaFe = 52 )
+	StartCity = Albuquerque
+	GoalCity = StGeorge
+	 }   
+	Run
+	OpenListMaxLen
+	OpenClosedRatio
