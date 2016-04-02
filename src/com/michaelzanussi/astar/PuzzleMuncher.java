@@ -89,7 +89,7 @@ public class PuzzleMuncher {
 			String strToken = token.getToken();
 
 			// Empty file?
-			if( strToken.length() == 0 ) {
+			if (strToken.length() == 0) {
 				return;
 			}
 
@@ -98,20 +98,19 @@ public class PuzzleMuncher {
 			// goal states, for example). The individual puzzle data
 			// structures are filled with calls to their respective parsers.
 			
-			if( strToken.equals( "Puzzle" ) ) {
+			if (strToken.equals("Puzzle")) {
 				
 				// Get the puzzle family. 
 				token = lexer.nextToken();
 				strToken = token.getToken();
 				
-				if( strToken.equals( "MissionariesAndCannibals" ) ) {
+				if (strToken.equals("MissionariesAndCannibals")) {
 					// Push the current token back onto the stack.
 					lexer.pushBack(token);
 					// Parse the MissionariesAndCannibals puzzle portion from the input
 					// file and store the resultant data off.
 					mcData = parseMCPuzzle(lexer);
-				}
-				else if( strToken.equals( "ShortestPaths" ) ) {
+				} else if (strToken.equals("ShortestPaths")) {
 					// Push the current token back onto the stack.
 					lexer.pushBack(token);
 					// Parse the ShortestPaths puzzle portion from the input
@@ -119,21 +118,20 @@ public class PuzzleMuncher {
 					spData = parseSPPuzzle(lexer);
 					// Setup the city table.
 					spData.fillTable();
-				}
-				else if( strToken.equals( "Grid" ) ) {
+				} else if (strToken.equals("Grid")) {
 					// Push the current token back onto the stack.
 					lexer.pushBack( token );
 					// Parse the Grid puzzle portion from the input
 					// file and store the resultant data off.
 					gridData = parseGridPuzzle(lexer);
-				}
-				else if( strToken.equals( "NToTheKPuzzle" ) ) {
+				} else if (strToken.equals("NToTheKPuzzle")) {
 					// Push the current token back onto the stack. 
 					lexer.pushBack(token);
 					// Parse the NToTheKPuzzle puzzle portion from the input
 					// file and store the resultant data off.
 					parseN2KPuzzle(lexer);
 				}
+				
 			}
 			
 			// The beginning of a control sequence definition, which define
@@ -148,7 +146,7 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle Run
-				else if( strToken.equals( "Run" ) ) {
+				else if (strToken.equals("Run")) {
 					
 					// Output the heuristic name.
 					Global.output("\nHeuristic: " + hName);
@@ -269,7 +267,7 @@ public class PuzzleMuncher {
 
 					// If a log file has been specified, output the heuristic
 					// name for convenience.
-					if( Global.getLogFile() != null ) {
+					if (Global.getLogFile() != null) {
 						
 						Global.log("\nHeuristic: " + hName);
 						
@@ -294,10 +292,10 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle the optional OUTFILE.
-				else if( strToken.equals( "OutFile" ) ) {
+				else if (strToken.equals("OutFile")) {
 
 					// Get the output filename.
-					lexer.pushBack( token );
+					lexer.pushBack(token);
 					outFile = ParseFile.parse(lexer);
 
 					// Is filename in use by log file already?
@@ -318,7 +316,7 @@ public class PuzzleMuncher {
 					
 					// Set the global output file.
 					TextFileWriter tfw = Global.getOutFile();
-					if( tfw != null ) {
+					if (tfw != null) {
 						// An output file is already open. Close it.
 						tfw.close();
 					}
@@ -327,19 +325,18 @@ public class PuzzleMuncher {
 					// it'll append automatically.
 					tfw = new TextFileWriter();
 					if (tfw.open(new File(outFile))) {
-						Global.setOutFile( tfw );
-					}
-					else {
-						Global.setOutFile( null );
+						Global.setOutFile(tfw);
+					} else {
+						Global.setOutFile(null);
 					}
 					
 				}
 				
 				// Handle the optional LOGFILE.
-				else if( strToken.equals( "LogFile" ) ) {
+				else if (strToken.equals("LogFile")) {
 					
 					// Get the log filename.
-					lexer.pushBack( token );
+					lexer.pushBack(token);
 					logFile = ParseFile.parse(lexer);
 
 					// Is filename in use by output file already?
@@ -360,7 +357,7 @@ public class PuzzleMuncher {
 					
 					// Set the global log file.
 					TextFileWriter tfw = Global.getLogFile();
-					if( tfw != null ) {
+					if (tfw != null) {
 						// A log file is already open. Close it.
 						tfw.close();
 					}
@@ -369,19 +366,19 @@ public class PuzzleMuncher {
 					// it'll append automatically.
 					tfw = new TextFileWriter();
 					if (tfw.open(new File(logFile))) {
-						Global.setLogFile( tfw );
+						Global.setLogFile(tfw);
 					}
 					else {
-						Global.setLogFile( null );
+						Global.setLogFile(null);
 					}
 					
 				}
 				
 				// Handle the optional ERRFILE.
-				else if( strToken.equals( "ErrFile" ) ) {
+				else if (strToken.equals("ErrFile")) {
 					
 					// Get the error filename.
-					lexer.pushBack( token );
+					lexer.pushBack(token);
 					errFile = ParseFile.parse(lexer);
 				
 					// Is filename in use by log file already?
@@ -402,7 +399,7 @@ public class PuzzleMuncher {
 					
 					// Set the global error file.
 					TextFileWriter tfw = Global.getErrFile();
-					if( tfw != null ) {
+					if (tfw != null) {
 						// An error file is already open. Close it.
 						tfw.close();
 					}
@@ -411,16 +408,16 @@ public class PuzzleMuncher {
 					// it'll append automatically.
 					tfw = new TextFileWriter();
 					if (tfw.open(new File(errFile))) {
-						Global.setErrFile( tfw );
+						Global.setErrFile(tfw);
 					}
 					else {
-						Global.setErrFile( null );
+						Global.setErrFile(null);
 					}
 					
 				}
 				
 				// Handle SEARCH-CTRL / OPENLIST-BOUND.
-				else if( strToken.equals( "OpenListBound" ) ) {
+				else if (strToken.equals("OpenListBound")) {
 					
 					// Push token back onto stream before parsing value.
 					lexer.pushBack(token);
@@ -429,7 +426,7 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle SEARCH-CTRL / TOTALNODES-BOUND.
-				else if( strToken.equals( "TotalNodesBound" ) ) {
+				else if (strToken.equals("TotalNodesBound")) {
 
 					// Push token back onto stream before parsing value.
 					lexer.pushBack(token);
@@ -438,7 +435,7 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle SEARCH-CTRL / TIME-BOUND
-				else if( strToken.equals( "TimeBound" ) ) {
+				else if (strToken.equals("TimeBound")) {
 
 					// Push token back onto stream before parsing value.
 					lexer.pushBack(token);
@@ -452,9 +449,9 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle RESULTS / StatePath
-				else if( strToken.equals( "StatePath" ) ) {
+				else if (strToken.equals("StatePath")) {
 					
-					Global.setStatePath( true );
+					Global.setStatePath(true);
 					
 				}
 				
@@ -464,9 +461,9 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle RESULTS / Debug
-				else if( strToken.equals( "Debug" ) ) {
+				else if (strToken.equals("Debug")) {
 					
-					Global.setDebug( true );
+					Global.setDebug(true);
 					
 				}
 				
@@ -492,7 +489,7 @@ public class PuzzleMuncher {
 				}
 				
 				// Handle STATS / OpenClosedRatio
-				else if( strToken.equals( "OpenClosedRatio" ) ) {
+				else if (strToken.equals("OpenClosedRatio")) {
 					
 					// Can be called at any time.
 					Global.log( "OpenClosedRatio (min): " + Global.getMinRatio() );
@@ -504,8 +501,7 @@ public class PuzzleMuncher {
 				else {
 					
 					// Unknown grammar has been found.
-					throw new ParsingException( "PuzzleMuncher.parse error: " +
-							"Unknown grammar encountered in input file: '" + strToken + "'");
+					throw new ParsingException("PuzzleMuncher.parse error: Unknown grammar encountered in input file: '" + strToken + "'");
 					
 				}
 				
@@ -724,7 +720,7 @@ public class PuzzleMuncher {
 			
 			if (hName.equals("MandCTrips")) {
 				goal = new MandCTrips(state[0][0], state[0][1], state[2][0], null);
-			} else if(hName.equals("MandCCount")) {				
+			} else if (hName.equals("MandCCount")) {				
 				goal = new MandCCount(state[0][0], state[0][1], state[2][0], null);
 			}
 			
@@ -755,7 +751,7 @@ public class PuzzleMuncher {
 			if (hName.equals("MandCTrips")) {
 				start = new MandCTrips(state[0][0], state[0][1], state[2][0], null);
 			}
-			else if(hName.equals("MandCCount")) {				
+			else if (hName.equals("MandCCount")) {				
 				start = new MandCCount(state[0][0], state[0][1], state[2][0], null);
 			}
 			
@@ -927,7 +923,7 @@ public class PuzzleMuncher {
 			
 			if (hName.equals("GridManhattan")) {
 				goal = new GridManhattan(x, y, 1.0, null);
-			} else if(hName.equals("GridStraight")) {				
+			} else if (hName.equals("GridStraight")) {				
 				goal = new GridStraight(x, y, 1.0, null);
 			}
 			
@@ -987,7 +983,7 @@ public class PuzzleMuncher {
 			
 			if (hName.equals("GridManhattan")) {
 				start = new GridManhattan(x, y, 1.0, null);
-			} else if(hName.equals("GridStraight")) {				
+			} else if (hName.equals("GridStraight")) {				
 				start = new GridStraight(x, y, 1.0, null);
 			}
 			
@@ -1170,7 +1166,7 @@ public class PuzzleMuncher {
 		/**
 		 * Prints the completed path and other useful statistics.
 		 */
-		public void print( List<Object> path ) {
+		public void print(List<Object> path) {
 
 			// No solution.
 			if (path == null) {
@@ -1695,66 +1691,48 @@ public class PuzzleMuncher {
 	public static void main( String[] args ) {
 		
 		// Only one command line argument allowed (and required).
-		if( args.length != 1 ) {
-			System.out.println( "Usage: java PuzzleMuncher inputFile" );
-			System.exit( 1 );
+		if (args.length != 1) {
+			System.out.println("Usage: java PuzzleMuncher inputFile");
+			System.exit(1);
 		}
 		
 		// The input file.
-		File input = new File( args[0] );
+		File input = new File(args[0]);
 
 		// Create and instantiate a PushbackReader object
 		// and open up the input file.
 		PushbackReader pr = new PushbackReader();
-		pr.open( input );
+		pr.open(input);
 
 		// Create a global object.
-		/*Global g = */new Global();
+		new Global();
 
 		// Create the lexer.
-		Lexer lexer = new PuzzleLexer( pr );
+		Lexer lexer = new PuzzleLexer(pr);
 		
 		// Create a PuzzleMuncher object.
-		PuzzleMuncher pm = new PuzzleMuncher( lexer );
+		PuzzleMuncher pm = new PuzzleMuncher(lexer);
 
 		// Start the parse! (or try to)
 		try {
-long b = System.currentTimeMillis();
 			pm.parse(); 
-long e = System.currentTimeMillis();
-System.out.println( e - b );
 		}
-		catch( ParsingException e ) {
-			Global.error( e.getMessage() );
-		}
-		catch( UnsupportedOperationException e) {
-			Global.error( e.getMessage() );
-		}
-		catch( IllegalArgumentException e ) {
-			Global.error( e.getMessage() );
-		}
-		catch( NullPointerException e ) {
-			Global.error( e.getMessage() );
-		}
-		catch( IndexOutOfBoundsException e ) {
-			Global.error( e.getMessage() );
-		}
-		catch( IllegalStateException e ) {
-			Global.error( e.getMessage() );
+		catch (Exception e) {
+			Global.error(e.getMessage());
 		}
 		finally {
 			// Close the reader.
 			pr.close();
 			// Close the error file.
-			if( Global.getErrFile() != null ) {
+			if (Global.getErrFile() != null) {
 				Global.getErrFile().close();
 			}
 			// Close the log file.
-			if( Global.getLogFile() != null ) {
+			if (Global.getLogFile() != null) {
 				Global.getLogFile().close();
 			}
 			// Close the output file.
-			if( Global.getOutFile() != null ) {
+			if (Global.getOutFile() != null) {
 				Global.getOutFile().close();
 			}
 		}

@@ -137,11 +137,8 @@ public class AStar extends AbstractPuzzleEngine {
 					}
 				}
 				// Is this child on the open list?
-				// TODO: Ok, hash used to provide quick contains(), get(), and remove() operations.
-				// But hash implementation in the PQ is problematic due to possibility of duplicate
-				// keys. Need to rethink the data structure.
+				// TODO: Time to rethink data struct?
 				else if (open.contains(newChild)) {
-//					System.out.println("*** child is on the open list ***");
 					// Check if this child's heuristic is less than what's
 					// already on the open list (non-monotonic only).
 					double newH = newChild.heuristic();
@@ -177,9 +174,8 @@ public class AStar extends AbstractPuzzleEngine {
 			// list and continue searching.
 			Object oldc = closed.put(parent, parent);
 			
-			// TODO: Do we need to worry about duplicate keys? may need to change this data struct.
+			// TODO: Assert fails if duplicate key encountered. Time to rethink data struct.
 			assert(oldc == null);
-			//if (old == null) System.out.println("MAPPING EXISTS FOR KEY: " + old);
 			
 			// Record the list sizes and then calculate the open/closed
 			// ratio (performed by setClosedListSize and setOpenListSize).
